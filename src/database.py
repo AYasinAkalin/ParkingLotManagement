@@ -10,4 +10,8 @@ def open(file):
     
 
 
+def execute(sql,conn):
+   cursor = conn.cursor()
+   cursor.execute(sql) 
+   conn.commit()
 
