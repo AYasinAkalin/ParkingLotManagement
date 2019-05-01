@@ -259,6 +259,81 @@ def init(file):
                 NOT NULL\
         )"  # Save 1st, 2nd, 3rd quartets encrypted, leave 4th as it is
     execute(card_quartets_sql, c)
+    memberships_sql = "CREATE TABLE Memberships\
+        (\
+            'MShipNum'      TEXT\
+                PRIMARY KEY\
+                    ASC\
+                    ON CONFLICT ROLLBACK\
+                UNIQUE\
+                NOT NULL,\
+            'MemberID'      TEXT\
+                REFERENCES Members(MemberID)\
+                NOT NULL,\
+            'Type'          TEXT,\
+            'StartDate'     TEXT,\
+            'EndDate'       TEXT,\
+            'Duration'      INTEGER,\
+            'Price'         REAL\
+        )"
+    execute(memberships_sql, c)
+    membership_rentals_sql = "CREATE TABLE MembershipRentals\
+        (\
+            'MShipNum'      TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT ROLLBACK\
+                REFERENCES Memberships(MShipNum)\
+                NOT NULL,\
+            'RentalType'    INTEGER\
+                REFERENCES Rentals(RentalType)\
+        )"
+    execute(membership_rentals_sql, c)
+    rentals_sql = "CREATE TABLE Rentals\
+        (\
+            'RentalType'    INTEGER\
+                PRIMARY KEY\
+                    ASC\
+                    ON CONFLICT REPLACE\
+                    AUTOINCREMENT\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                NOT NULL,\
+            'VehicleType'   TEXT\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'RentalTerm'    TEXT\
+                CHECK(RentalTerm = 'Monthly' or RentalTerm = 'Annual')\
+                NOT NULL,\
+            'BaseFee'       INTEGER\
+                NOT NULL\
+        )"
+    execute(rentals_sql, c)
+    membership_discounts_sql = "CREATE TABLE MembershipDiscounts\
+        (\
+            'MemberID'      TEXT\
+                PRIMARY KEY\
+                REFERENCES Memberships(MemberID)\
+                UNIQUE\
+                NOT NULL,\
+            'VehicleCount'  INTEGER\
+                CHECK(1 or 2 or 3)\
+                REFERENCES Discounts(VehicleCount)\
+        )"
+    execute(membership_discounts_sql, c)
+    discounts_sql = "CREATE TABLE Discounts\
+        (\
+            'VehicleCount'  INTEGER\
+                PRIMARY KEY\
+                    ASC\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(1 or 2 or 3)\
+                NOT NULL,\
+            'Discounts'     REAL\
+                NOT NULL\
+        )"
+    execute(discounts_sql, c)
     c.close()
 
 
