@@ -1,8 +1,10 @@
 import sqlite3
 
 
-def init(file):
+def init(file, clean=True):
     c = open(file)
+    if clean:
+        delete_tables(c)
     # create Firm table
     Firm_sql = "CREATE TABLE Firm(\
         'FirmAlias' TEXT NOT NULL UNIQUE,\
@@ -314,4 +316,32 @@ def open(file):
 def execute(sql, conn):
     cursor = conn.cursor()
     cursor.execute(sql)
+    conn.commit()
+
+
+def delete_tables(conn):
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS Firm")
+    cursor.execute("DROP TABLE IF EXISTS ParkingLots")
+    cursor.execute("DROP TABLE IF EXISTS Floors")
+    cursor.execute("DROP TABLE IF EXISTS RentalAreas")
+    cursor.execute("DROP TABLE IF EXISTS ChargeSpots")
+    cursor.execute("DROP TABLE IF EXISTS ParkingSpots")
+    cursor.execute("DROP TABLE IF EXISTS ReservedSpots")
+    cursor.execute("DROP TABLE IF EXISTS RentalAgreement")
+    cursor.execute("DROP TABLE IF EXISTS TenantContacts")
+    cursor.execute("DROP TABLE IF EXISTS ChargingInfo")
+    cursor.execute("DROP TABLE IF EXISTS Parkinginfo")
+    cursor.execute("DROP TABLE IF EXISTS Users")
+    cursor.execute("DROP TABLE IF EXISTS Permissions")
+    cursor.execute("DROP TABLE IF EXISTS UserPermissions")
+    cursor.execute("DROP TABLE IF EXISTS Members")
+    cursor.execute("DROP TABLE IF EXISTS WalletAccounts")
+    cursor.execute("DROP TABLE IF EXISTS CreditCards")
+    cursor.execute("DROP TABLE IF EXISTS CardQuartets")
+    cursor.execute("DROP TABLE IF EXISTS Memberships")
+    cursor.execute("DROP TABLE IF EXISTS MembershipRentals")
+    cursor.execute("DROP TABLE IF EXISTS Rentals")
+    cursor.execute("DROP TABLE IF EXISTS MembershipDiscounts")
+    cursor.execute("DROP TABLE IF EXISTS Discounts")
     conn.commit()
