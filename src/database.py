@@ -305,6 +305,7 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(discounts_sql, c)
+    fill_tables(demo=False)
     c.close()
 
 
@@ -345,3 +346,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS MembershipDiscounts")
     cursor.execute("DROP TABLE IF EXISTS Discounts")
     conn.commit()
+
+
+def fill_tables(conn, demo=True, verbose=False):
+    pass
