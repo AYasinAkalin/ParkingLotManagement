@@ -306,6 +306,7 @@ def init(file, clean=True):
         )"
     execute(discounts_sql, c)
     fill_tables(demo=False)
+    fill_tables(conn=c, demo=False)
     c.close()
 
 
@@ -349,4 +350,19 @@ def delete_tables(conn):
 
 
 def fill_tables(conn, demo=True, verbose=False):
-    pass
+    queries = (
+        "INSERT INTO Discounts VALUES (1, 0.10)",
+        "INSERT INTO Discounts VALUES (2, 0.15)",
+        "INSERT INTO Discounts VALUES (3, 0.20)",
+        "INSERT INTO Rentals VALUES (1, 'Car', 'Monthly', 80)",
+        "INSERT INTO Rentals VALUES (2, 'Car', 'Annual', 800)",
+        "INSERT INTO Rentals VALUES (3, 'Motorcycle', 'Monthly', 30)",
+        "INSERT INTO Rentals VALUES (4, 'Motorcycle', 'Annual', 300)",
+    for query in queries:
+        execute(query, conn)
+    '''
+    if demo:
+        demo_queries = ()
+        for queiry in demo_queries:
+            execute(query, conn)
+    '''
