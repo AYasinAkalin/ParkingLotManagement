@@ -144,6 +144,15 @@ def init(file, clean=True):
                 UNIQUE\
                     ON CONFLICT ABORT,\
             'Password'  TEXT\
+                NOT NULL,\
+            'Salt'      TEXT\
+                UNIQUE\
+                    ON CONFLICT ABORT\
+                DEFAULT (\
+                    'S-' || lower(hex(randomblob(4))) ||\
+                    '-' || lower(hex(randomblob(4)))\
+                    )\
+                NOT NULL\
         )"
     execute(users_sql, c)
     permissions_sql = "CREATE TABLE Permissions\
