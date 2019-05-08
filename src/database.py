@@ -1,4 +1,5 @@
 import sqlite3
+import config as cfg
 
 
 def init(file, clean=True):
@@ -369,7 +370,7 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(charger_tier_profiles_sql, c)
-    fill_tables(conn=c, demo=False)
+    fill_tables(conn=c, demo=cfg.DEMO)
     c.close()
 
 
