@@ -143,7 +143,15 @@ def init(file, clean=True):
                 NOT NULL,\
             'EMail'     TEXT\
                 UNIQUE\
-                    ON CONFLICT ABORT,\
+                    ON CONFLICT ABORT\
+        )"
+    execute(users_sql, c)
+    users_creditentials_sql = "CREATE TABLE UsersCreditentials\
+        (\
+            'UserID'        TEXT\
+                PRIMARY KEY\
+                REFERENCES Users(UserID)\
+                NOT NULL,\
             'Password'  TEXT\
                 NOT NULL,\
             'Salt'      TEXT\
@@ -155,7 +163,7 @@ def init(file, clean=True):
                     )\
                 NOT NULL\
         )"
-    execute(users_sql, c)
+    execute(users_creditentials_sql, c)
     permissions_sql = "CREATE TABLE Permissions\
         (\
             'PermissionKey' TEXT\
@@ -399,6 +407,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS ChargingInfo")
     cursor.execute("DROP TABLE IF EXISTS Parkinginfo")
     cursor.execute("DROP TABLE IF EXISTS Users")
+    cursor.execute("DROP TABLE IF EXISTS UsersCreditentials")
     cursor.execute("DROP TABLE IF EXISTS Permissions")
     cursor.execute("DROP TABLE IF EXISTS UserPermissions")
     cursor.execute("DROP TABLE IF EXISTS Members")
