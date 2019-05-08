@@ -305,7 +305,61 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(discounts_sql, c)
-    fill_tables(demo=False)
+    parking_prices_sql = "CREATE TABLE ParkingPrices\
+        (\
+            'VehicleType'   TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'StartingFee'   REAL\
+                NOT NULL,\
+            'ExtraFee'      REAL\
+                NOT NULL\
+        )"
+    execute(parking_prices_sql, c)
+    charging_prices_sql = "CREATE TABLE ChargingPrices\
+        (\
+            'VehicleType'   TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'ChargingFeeT1' REAL\
+                NOT NULL,\
+            'ChargingFeeT2' REAL\
+                NOT NULL,\
+            'IdleFee'       REAL\
+                NOT NULL\
+        )"
+    execute(charging_prices_sql, c)
+    charger_tier_profiles_sql = "CREATE TABLE ChargerTiers\
+        (\
+            'ProfileNumber'     INTEGER\
+                PRIMARY KEY\
+                    ASC\
+                    ON CONFLICT REPLACE\
+                    AUTOINCREMENT\
+                UNIQUE\
+                    ON CONFLICT REPLACE,\
+            'Tier'              INTEGER\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(1 or 2)\
+                NOT NULL,\
+            'VehicleType'       TEXT\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'LowerBound'        REAL\
+                NOT NULL,\
+            'UpperBound'        REAL\
+                NOT NULL\
+        )"
+    execute(charger_tier_profiles_sql, c)
     fill_tables(conn=c, demo=False)
     c.close()
 
@@ -346,6 +400,9 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS Rentals")
     cursor.execute("DROP TABLE IF EXISTS MembershipDiscounts")
     cursor.execute("DROP TABLE IF EXISTS Discounts")
+    cursor.execute("DROP TABLE IF EXISTS ChargingPrices")
+    cursor.execute("DROP TABLE IF EXISTS ParkingPrices")
+    cursor.execute("DROP TABLE IF EXISTS ChargerTiers")
     conn.commit()
 
 
@@ -358,6 +415,14 @@ def fill_tables(conn, demo=True, verbose=False):
         "INSERT INTO Rentals VALUES (2, 'Car', 'Annual', 800)",
         "INSERT INTO Rentals VALUES (3, 'Motorcycle', 'Monthly', 30)",
         "INSERT INTO Rentals VALUES (4, 'Motorcycle', 'Annual', 300)",
+        "INSERT INTO ChargingPrices VALUES('Car', 0.07, 0.05, 0.30)",
+        "INSERT INTO ChargingPrices VALUES('Motorcycle', 0.05, 0.04, 0.15)",
+        "INSERT INTO ParkingPrices VALUES('Car', 2, 1)",
+        "INSERT INTO ParkingPrices VALUES('Motorcycle', 0.80, 0.30)",
+        "INSERT INTO ChargerTiers VALUES(1, 1, 'Car', 60, 999)",
+        "INSERT INTO ChargerTiers VALUES(2, 1, 'Motorcycle', 12, 999)",
+        "INSERT INTO ChargerTiers VALUES(3, 2, 'Car', 60, 60)",
+        "INSERT INTO ChargerTiers VALUES(4, 2, 'Motorcycle', 0, 12)")
     for query in queries:
         execute(query, conn)
     '''
