@@ -1,4 +1,5 @@
 import sqlite3
+import config as cfg
 
 
 def init(file, clean=True):
@@ -142,10 +143,27 @@ def init(file, clean=True):
                 NOT NULL,\
             'EMail'     TEXT\
                 UNIQUE\
-                    ON CONFLICT ABORT,\
-            'Password'  TEXT\
+                    ON CONFLICT ABORT\
         )"
     execute(users_sql, c)
+    users_creditentials_sql = "CREATE TABLE UsersCreditentials\
+        (\
+            'UserID'        TEXT\
+                PRIMARY KEY\
+                REFERENCES Users(UserID)\
+                NOT NULL,\
+            'Password'  TEXT\
+                NOT NULL,\
+            'Salt'      TEXT\
+                UNIQUE\
+                    ON CONFLICT ABORT\
+                DEFAULT (\
+                    'S-' || lower(hex(randomblob(4))) ||\
+                    '-' || lower(hex(randomblob(4)))\
+                    )\
+                NOT NULL\
+        )"
+    execute(users_creditentials_sql, c)
     permissions_sql = "CREATE TABLE Permissions\
         (\
             'PermissionKey' TEXT\
@@ -305,6 +323,62 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(discounts_sql, c)
+    parking_prices_sql = "CREATE TABLE ParkingPrices\
+        (\
+            'VehicleType'   TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'StartingFee'   REAL\
+                NOT NULL,\
+            'ExtraFee'      REAL\
+                NOT NULL\
+        )"
+    execute(parking_prices_sql, c)
+    charging_prices_sql = "CREATE TABLE ChargingPrices\
+        (\
+            'VehicleType'   TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'ChargingFeeT1' REAL\
+                NOT NULL,\
+            'ChargingFeeT2' REAL\
+                NOT NULL,\
+            'IdleFee'       REAL\
+                NOT NULL\
+        )"
+    execute(charging_prices_sql, c)
+    charger_tier_profiles_sql = "CREATE TABLE ChargerTiers\
+        (\
+            'ProfileNumber'     INTEGER\
+                PRIMARY KEY\
+                    ASC\
+                    ON CONFLICT REPLACE\
+                    AUTOINCREMENT\
+                UNIQUE\
+                    ON CONFLICT REPLACE,\
+            'Tier'              INTEGER\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(1 or 2)\
+                NOT NULL,\
+            'VehicleType'       TEXT\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'LowerBound'        REAL\
+                NOT NULL,\
+            'UpperBound'        REAL\
+                NOT NULL\
+        )"
+    execute(charger_tier_profiles_sql, c)
+    fill_tables(conn=c, demo=cfg.DEMO)
     c.close()
 
 
@@ -333,6 +407,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS ChargingInfo")
     cursor.execute("DROP TABLE IF EXISTS Parkinginfo")
     cursor.execute("DROP TABLE IF EXISTS Users")
+    cursor.execute("DROP TABLE IF EXISTS UsersCreditentials")
     cursor.execute("DROP TABLE IF EXISTS Permissions")
     cursor.execute("DROP TABLE IF EXISTS UserPermissions")
     cursor.execute("DROP TABLE IF EXISTS Members")
@@ -344,4 +419,34 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS Rentals")
     cursor.execute("DROP TABLE IF EXISTS MembershipDiscounts")
     cursor.execute("DROP TABLE IF EXISTS Discounts")
+    cursor.execute("DROP TABLE IF EXISTS ChargingPrices")
+    cursor.execute("DROP TABLE IF EXISTS ParkingPrices")
+    cursor.execute("DROP TABLE IF EXISTS ChargerTiers")
     conn.commit()
+
+
+def fill_tables(conn, demo=True, verbose=False):
+    queries = (
+        "INSERT INTO Discounts VALUES (1, 0.10)",
+        "INSERT INTO Discounts VALUES (2, 0.15)",
+        "INSERT INTO Discounts VALUES (3, 0.20)",
+        "INSERT INTO Rentals VALUES (1, 'Car', 'Monthly', 80)",
+        "INSERT INTO Rentals VALUES (2, 'Car', 'Annual', 800)",
+        "INSERT INTO Rentals VALUES (3, 'Motorcycle', 'Monthly', 30)",
+        "INSERT INTO Rentals VALUES (4, 'Motorcycle', 'Annual', 300)",
+        "INSERT INTO ChargingPrices VALUES('Car', 0.07, 0.05, 0.30)",
+        "INSERT INTO ChargingPrices VALUES('Motorcycle', 0.05, 0.04, 0.15)",
+        "INSERT INTO ParkingPrices VALUES('Car', 2, 1)",
+        "INSERT INTO ParkingPrices VALUES('Motorcycle', 0.80, 0.30)",
+        "INSERT INTO ChargerTiers VALUES(1, 1, 'Car', 60, 999)",
+        "INSERT INTO ChargerTiers VALUES(2, 1, 'Motorcycle', 12, 999)",
+        "INSERT INTO ChargerTiers VALUES(3, 2, 'Car', 60, 60)",
+        "INSERT INTO ChargerTiers VALUES(4, 2, 'Motorcycle', 0, 12)")
+    for query in queries:
+        execute(query, conn)
+    '''
+    if demo:
+        demo_queries = ()
+        for queiry in demo_queries:
+            execute(query, conn)
+    '''
