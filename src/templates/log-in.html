@@ -1,7 +1,7 @@
 <html>
 <head>
   <title> Login and Registration </title>
-  <link href="style.css" rel="stylesheet" type="text/css">
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
     <header>
@@ -9,11 +9,11 @@
 
       <div class="row">
       <ul  class="main-nav">
-        <li><a href="index.html"> HOME </a> </li>
-        <li><a href="services.html"> SERVICES </a> </li>
-        <li><a href="about.html"> ABOUT </a> </li>
-        <li><a href="contact.html"> CONTACT </a> </li>
-        <li class="active"><a href="log-in.html"> LOG IN </a> </li>
+        <li><a href="/"> HOME </a> </li>
+        <li><a href="/services"> SERVICES </a> </li>
+        <li><a href="/about"> ABOUT </a> </li>
+        <li><a href="/contact"> CONTACT </a> </li>
+        <li class="active"><a href="/login"> LOG IN </a> </li>
       </ul>
     </div>
 
@@ -39,9 +39,9 @@
 
     </div>
     </div>
-
-    <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
-
+    <!-- Javascript Libraries required for Bootstrap -->
+    <!-- Keep them at the bottom of <body> -->
+    <script src="{{ url_for('static', filename='node_modules/jquery-3.4.1.min.js')}}"></script>
     <script>
     $('.message a').click(function()
     {
