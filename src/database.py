@@ -307,7 +307,7 @@ def init(file):
 
 
 def open(file):
-    conn = sqlite3.connect(file)
+    conn = sqlite3.connect(str(file))
     return conn
 
 
