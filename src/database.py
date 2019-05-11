@@ -470,51 +470,55 @@ def fill_tables(conn, demo=True, verbose=False):
         
         
             "INSERT INTO ParkingLots(LotAlias,FirmAlias,LotName,PriceMultiplier,Street_1,Street_2,City,Region,PostalCode)\
-                VALUES('ltls',\
-                'Frmls',\
-                'LtNm',\
-                'PrcMltplr',\
-                'Strt1',\
-                'Strt2',\
-                'Cty',\
-                'Rgn',\
-                'PstCd')",
+                VALUES('ltals',\
+                    'Frmls',\
+                    'LtNm',\
+                    'PrcMltplr',\
+                    'Strt1',\
+                    'Strt2',\
+                    'Cty',\
+                    'Rgn',\
+                    'PstCd')",
                 
 
 
-         "INSERT INTO Floors(FloorNumber,LotAlias)\
+            "INSERT INTO Floors(FloorNumber,LotAlias)\
                 VALUES('flrnmb',\
-                       'ltAls')",
-               
-          
+                       'ltals')",
+            "INSERT INTO Floors(FloorNumber,LotAlias)\
+                VALUES('flrnmb',\
+                       'ltals')",
+            "INSERT INTO Floors(FloorNumber,LotAlias)\
+                VALUES('flrnmb',\
+                       'ltals')",
 
           
-          "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
-          VALUES('Rntld',\
-                 'FlrNmbr',\
-                  'ltAls')",
+            "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
+                VALUES('R00101',\
+                    'Flr_8',\
+                    'ltals')",
             
 
          
          
           "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
-          VALUES('CSpotID',\
-                 'LotAlias',\
-                 'Floornumber')",
+          VALUES('C01111',\
+                    'Ltals',\
+                    'Flr_8')",
                
           
 
            
            "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
             VALUES('PSPD',\
-                   'LTLS',\
-                   'flrnmb')",
+                   'Ltals',\
+                   'flr_8')",
            
 
             
         
           "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
-           VALUES('psptd',\
+           VALUES('P01100',\
                   'mshpnm')",
            
           
@@ -522,24 +526,24 @@ def fill_tables(conn, demo=True, verbose=False):
           
           
           "INSERT INTO RentalAgreement(RentalID,LotAlias,TenandID,StartDate,EndDate,ftent,Duration,Description)\
-           VALUES('rntld',\
-                 'ltls',\
-                 'tnnd',\
-                 'strdt',\
-                 'ndt',\
-                 'ftnt',\
-                 'drtn',\
-                 'dscrptn')",
+           VALUES('R00101',\
+                    'ltals',\
+                    'T010101',\
+                    'strdt',\
+                    'endt',\
+                    'ftnt',\
+                    'drtn',\
+                    'dscrptn')",
 
             "INSERT INTO TenantContacts(TenantID,Name,Telephone,EMail)\
-                VALUES('tntd',\
-                'nm',\
-                'Telephone',\
-                'EMail')",
+                VALUES('T010101',\
+                    'nm',\
+                    'Telephone',\
+                    'parkmanager@gmail.com')",
               
 
            "INSERT INTO ChargingInfo(CSpotID,StartedAt,CPercentage,CPower,ChargeAt)\
-            VALUES('cspd',\
+            VALUES('C01111',\
                    'strdt',\
                    'cprctg',\
                    'cpwr',\
@@ -549,19 +553,89 @@ def fill_tables(conn, demo=True, verbose=False):
 
         
             "INSERT INTO ParkingInfo(PSpotID,StartedAt)\
-             VALUES('psptd',\
+             VALUES('P01100',\
                     'strdt')",
 
             "INSERT INTO Users(UserID,UserName,EMail)\
-                VALUES('0001',\
+                VALUES('S0001',\
                        'manager',\
                        'parkmanager@gmail.com')",
+           
+           
             "INSERT INTO UsersCreditentials(UserID,Password)\
                 VALUES('0001',\
-                       'psswrd')"  
+                       '01000')",
 
-           
-           )
+            
+           "INSERT INTO Members(MemberID,UserID,MemberName)\
+            VALUES('M00011',\
+                   'S0001',\
+                   'mmbrnm')",
+
+            
+             "INSERT INTO WalletAccounts(WalletID,MemberID)\
+             VALUES('W00101',\
+                    'M00011')",
+
+            
+             "INSERT INTO CreditCards(CardID,WalletID,HolderName,ValidUntil)\
+             VALUES('C01111',\
+                    'W00101',\
+                    'hldrnm',\
+                    'vldntl')",
+
+
+
+             "INSERT INTO CardQuartets(CardID,CardQ1,CardQ2,CardQ3,CardQ4)\
+              VALUES('C01111',\
+                     'HASHEDxNASDKFCHEJSSMASJVIDIdDM+vs',\
+                     'HASHEDxNASDKFCHEJSSMASJVIDIasdaSD',\
+                     'HASHEDxNASDKFCHEJSSMASJV23zI5DIDn',\
+                     '2345')",
+
+
+          "INSERT INTO Memberships(MShipNum,MemberID,Type,StartDate,EndDate,Duration,Price)\
+             VALUES('mshpnm',\
+                    'M0001',\
+                    'typ',\
+                    'strdt',\
+                    'endt',\
+                    'drtn',\
+                    'prc')",
+
+          
+          "INSERT INTO Discounts(VehicleCount,Discounts)\
+            VALUES('vhclcnt',\
+                   'dscnts')",
+                
+
+
+         "INSERT INTO ParkingPrices(VehicleType,StartingFee,ExtraFee)\
+           VALUES('vhctyp',\
+                  'strngf',\
+                  'extrf')",
+
+
+        "INSERT INTO ChargingPrices(VehicleType,ChargingFeeT1,ChargingFeeT2,IdleFee)\
+           VALUES('vhctyp',\
+                   'chrgf1',\
+                   'chrgf2',\
+                   'ıdlfe')",
+         
+         
+         "INSERT INTO ChargerTiers(ProfileNumber,Tier,VehicleType,LowerBound,UpperBound)\
+          VALUES('prflnmbr',\
+                 'tie',\
+                 'vhctyp',\
+                'lwrbnd',\
+                'uprboud')"
+
+
+
+
+
+
+       )
     
         for query in demo_queries:
             execute(query, conn)
