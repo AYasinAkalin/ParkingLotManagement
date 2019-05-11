@@ -1,6 +1,5 @@
 # __main__.py
 import subprocess as sp
-import definitions
 import database
 import server
 import config
