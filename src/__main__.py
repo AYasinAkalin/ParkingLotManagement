@@ -3,6 +3,7 @@ import subprocess as sp
 import database
 import server
 import config
+import definitions
 definitions.init()
 
 # Install dependencies
@@ -14,7 +15,7 @@ sp.run(cmd, shell=True)
 
 # Set the database
 db = database.Database(config.FILE_DATABASE)
-db.create()
+db.create(clean=config.CLEAN_DB)
 
 # Set the server and run it
 server = server.Server(config.FILE_FLASK, config.DEBUG)

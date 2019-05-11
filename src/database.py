@@ -8,8 +8,8 @@ class Database(object):
         super(Database, self).__init__()
         self.file = str(file)
 
-    def create(self):
-        init(self.file)
+    def create(self, clean=True):
+        init(self.file, clean=clean)
 
 
 def init(file, clean=True):
