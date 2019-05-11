@@ -36,8 +36,8 @@ Charging fees and idle fees may vary from one parking lot to another. For base p
 
 | Vehicle    | Charging Fee (Tier 1) | Charging Fee (Tier 2) | Idle Fee |
 |------------|:---------------------:|:---------------------:|:--------:|
-| Car        |          TBD          |         $0.05         |   $0.30  |
-| Motorcycle |          TBD          |         $0.04         |   $0.15  |
+| Car        |         $0.07         |         $0.05         |   $0.30  |
+| Motorcycle |         $0.05         |         $0.04         |   $0.15  |
 
 *Table 2: Base Prices for charging vehicles. All prices are per minute.*
 

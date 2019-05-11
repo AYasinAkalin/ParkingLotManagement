@@ -1,8 +1,21 @@
 import sqlite3
+import config as cfg
 
 
-def init(file):
+class Database(object):
+    """docstring for Database"""
+    def __init__(self, file):
+        super(Database, self).__init__()
+        self.file = str(file)
+
+    def create(self, clean=True):
+        init(self.file, clean=clean)
+
+
+def init(file, clean=True):
     c = open(file)
+    if clean:
+        delete_tables(c)
     # create Firm table
     Firm_sql = "CREATE TABLE Firm(\
         'FirmAlias' TEXT NOT NULL UNIQUE,\
@@ -140,10 +153,27 @@ def init(file):
                 NOT NULL,\
             'EMail'     TEXT\
                 UNIQUE\
-                    ON CONFLICT ABORT,\
-            'Password'  TEXT\
+                    ON CONFLICT ABORT\
         )"
     execute(users_sql, c)
+    users_creditentials_sql = "CREATE TABLE UsersCreditentials\
+        (\
+            'UserID'        TEXT\
+                PRIMARY KEY\
+                REFERENCES Users(UserID)\
+                NOT NULL,\
+            'Password'  TEXT\
+                NOT NULL,\
+            'Salt'      TEXT\
+                UNIQUE\
+                    ON CONFLICT ABORT\
+                DEFAULT (\
+                    'S-' || lower(hex(randomblob(4))) ||\
+                    '-' || lower(hex(randomblob(4)))\
+                    )\
+                NOT NULL\
+        )"
+    execute(users_creditentials_sql, c)
     permissions_sql = "CREATE TABLE Permissions\
         (\
             'PermissionKey' TEXT\
@@ -303,11 +333,67 @@ def init(file):
                 NOT NULL\
         )"
     execute(discounts_sql, c)
+    parking_prices_sql = "CREATE TABLE ParkingPrices\
+        (\
+            'VehicleType'   TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'StartingFee'   REAL\
+                NOT NULL,\
+            'ExtraFee'      REAL\
+                NOT NULL\
+        )"
+    execute(parking_prices_sql, c)
+    charging_prices_sql = "CREATE TABLE ChargingPrices\
+        (\
+            'VehicleType'   TEXT\
+                PRIMARY KEY\
+                    ON CONFLICT REPLACE\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'ChargingFeeT1' REAL\
+                NOT NULL,\
+            'ChargingFeeT2' REAL\
+                NOT NULL,\
+            'IdleFee'       REAL\
+                NOT NULL\
+        )"
+    execute(charging_prices_sql, c)
+    charger_tier_profiles_sql = "CREATE TABLE ChargerTiers\
+        (\
+            'ProfileNumber'     INTEGER\
+                PRIMARY KEY\
+                    ASC\
+                    ON CONFLICT REPLACE\
+                    AUTOINCREMENT\
+                UNIQUE\
+                    ON CONFLICT REPLACE,\
+            'Tier'              INTEGER\
+                UNIQUE\
+                    ON CONFLICT REPLACE\
+                CHECK(1 or 2)\
+                NOT NULL,\
+            'VehicleType'       TEXT\
+                CHECK(VehicleType = 'Car' or VehicleType = 'Motorcycle')\
+                NOT NULL,\
+            'LowerBound'        REAL\
+                NOT NULL,\
+            'UpperBound'        REAL\
+                NOT NULL\
+        )"
+    execute(charger_tier_profiles_sql, c)
+    fill_tables(conn=c, demo=cfg.DEMO)
     c.close()
 
 
 def open(file):
-    conn = sqlite3.connect(file)
+    conn = sqlite3.connect(str(file))
     return conn
 
 
@@ -315,3 +401,243 @@ def execute(sql, conn):
     cursor = conn.cursor()
     cursor.execute(sql)
     conn.commit()
+
+
+def delete_tables(conn):
+    cursor = conn.cursor()
+    cursor.execute("DROP TABLE IF EXISTS Firm")
+    cursor.execute("DROP TABLE IF EXISTS ParkingLots")
+    cursor.execute("DROP TABLE IF EXISTS Floors")
+    cursor.execute("DROP TABLE IF EXISTS RentalAreas")
+    cursor.execute("DROP TABLE IF EXISTS ChargeSpots")
+    cursor.execute("DROP TABLE IF EXISTS ParkingSpots")
+    cursor.execute("DROP TABLE IF EXISTS ReservedSpots")
+    cursor.execute("DROP TABLE IF EXISTS RentalAgreement")
+    cursor.execute("DROP TABLE IF EXISTS TenantContacts")
+    cursor.execute("DROP TABLE IF EXISTS ChargingInfo")
+    cursor.execute("DROP TABLE IF EXISTS Parkinginfo")
+    cursor.execute("DROP TABLE IF EXISTS Users")
+    cursor.execute("DROP TABLE IF EXISTS UsersCreditentials")
+    cursor.execute("DROP TABLE IF EXISTS Permissions")
+    cursor.execute("DROP TABLE IF EXISTS UserPermissions")
+    cursor.execute("DROP TABLE IF EXISTS Members")
+    cursor.execute("DROP TABLE IF EXISTS WalletAccounts")
+    cursor.execute("DROP TABLE IF EXISTS CreditCards")
+    cursor.execute("DROP TABLE IF EXISTS CardQuartets")
+    cursor.execute("DROP TABLE IF EXISTS Memberships")
+    cursor.execute("DROP TABLE IF EXISTS MembershipRentals")
+    cursor.execute("DROP TABLE IF EXISTS Rentals")
+    cursor.execute("DROP TABLE IF EXISTS MembershipDiscounts")
+    cursor.execute("DROP TABLE IF EXISTS Discounts")
+    cursor.execute("DROP TABLE IF EXISTS ChargingPrices")
+    cursor.execute("DROP TABLE IF EXISTS ParkingPrices")
+    cursor.execute("DROP TABLE IF EXISTS ChargerTiers")
+    conn.commit()
+
+
+def fill_tables(conn, demo=True, verbose=False):
+    queries = (
+        "INSERT INTO Discounts VALUES (1, 0.10)",
+        "INSERT INTO Discounts VALUES (2, 0.15)",
+        "INSERT INTO Discounts VALUES (3, 0.20)",
+        "INSERT INTO Rentals VALUES (1, 'Car', 'Monthly', 80)",
+        "INSERT INTO Rentals VALUES (2, 'Car', 'Annual', 800)",
+        "INSERT INTO Rentals VALUES (3, 'Motorcycle', 'Monthly', 30)",
+        "INSERT INTO Rentals VALUES (4, 'Motorcycle', 'Annual', 300)",
+        "INSERT INTO ChargingPrices VALUES('Car', 0.07, 0.05, 0.30)",
+        "INSERT INTO ChargingPrices VALUES('Motorcycle', 0.05, 0.04, 0.15)",
+        "INSERT INTO ParkingPrices VALUES('Car', 2, 1)",
+        "INSERT INTO ParkingPrices VALUES('Motorcycle', 0.80, 0.30)",
+        "INSERT INTO ChargerTiers VALUES(1, 1, 'Car', 60, 999)",
+        "INSERT INTO ChargerTiers VALUES(2, 1, 'Motorcycle', 12, 999)",
+        "INSERT INTO ChargerTiers VALUES(3, 2, 'Car', 60, 60)",
+        "INSERT INTO ChargerTiers VALUES(4, 2, 'Motorcycle', 0, 12)")
+    for query in queries:
+        execute(query, conn)
+    
+    if cfg.DEMO:
+        demo_queries = (
+            "INSERT INTO Firm(FirmAlias, FirmNAME, EMail,Telephone,Street_1,Street_2,City,Region,PostalCode)\
+                VALUES('sa',\
+                    'sabancı',\
+                    'tsuruta@att.net',\
+                    '0539471',\
+                    '8591 South Mountainview Road Montclair',\
+                    'NJ 07042',\
+                    'antalya',\
+                    'muratpaşa',\
+                    '07042')",
+        
+        
+            "INSERT INTO ParkingLots(LotAlias,FirmAlias,LotName,PriceMultiplier,Street_1,Street_2,City,Region,PostalCode)\
+                VALUES('ltals',\
+                    'Frmls',\
+                    'LtNm',\
+                    'PrcMltplr',\
+                    'Strt1',\
+                    'Strt2',\
+                    'Cty',\
+                    'Rgn',\
+                    'PstCd')",
+                
+
+
+            "INSERT INTO Floors(FloorNumber,LotAlias)\
+                VALUES('flrnmb',\
+                       'ltals')",
+            "INSERT INTO Floors(FloorNumber,LotAlias)\
+                VALUES('flrnmb',\
+                       'ltals')",
+            "INSERT INTO Floors(FloorNumber,LotAlias)\
+                VALUES('flrnmb',\
+                       'ltals')",
+
+          
+            "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
+                VALUES('R00101',\
+                    'Flr_8',\
+                    'ltals')",
+            
+
+         
+         
+          "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
+          VALUES('C01111',\
+                    'Ltals',\
+                    'Flr_8')",
+               
+          
+
+           
+           "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
+            VALUES('PSPD',\
+                   'Ltals',\
+                   'flr_8')",
+           
+
+            
+        
+          "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
+           VALUES('P01100',\
+                  'mshpnm')",
+           
+          
+          
+          
+          
+          "INSERT INTO RentalAgreement(RentalID,LotAlias,TenandID,StartDate,EndDate,ftent,Duration,Description)\
+           VALUES('R00101',\
+                    'ltals',\
+                    'T010101',\
+                    'strdt',\
+                    'endt',\
+                    'ftnt',\
+                    'drtn',\
+                    'dscrptn')",
+
+            "INSERT INTO TenantContacts(TenantID,Name,Telephone,EMail)\
+                VALUES('T010101',\
+                    'nm',\
+                    'Telephone',\
+                    'parkmanager@gmail.com')",
+              
+
+           "INSERT INTO ChargingInfo(CSpotID,StartedAt,CPercentage,CPower,ChargeAt)\
+            VALUES('C01111',\
+                   'strdt',\
+                   'cprctg',\
+                   'cpwr',\
+                   'chrgt')",
+            
+
+
+        
+            "INSERT INTO ParkingInfo(PSpotID,StartedAt)\
+             VALUES('P01100',\
+                    'strdt')",
+
+            "INSERT INTO Users(UserID,UserName,EMail)\
+                VALUES('S0001',\
+                       'manager',\
+                       'parkmanager@gmail.com')",
+           
+           
+            "INSERT INTO UsersCreditentials(UserID,Password)\
+                VALUES('0001',\
+                       '01000')",
+
+            
+           "INSERT INTO Members(MemberID,UserID,MemberName)\
+            VALUES('M00011',\
+                   'S0001',\
+                   'mmbrnm')",
+
+            
+             "INSERT INTO WalletAccounts(WalletID,MemberID)\
+             VALUES('W00101',\
+                    'M00011')",
+
+            
+             "INSERT INTO CreditCards(CardID,WalletID,HolderName,ValidUntil)\
+             VALUES('C01111',\
+                    'W00101',\
+                    'hldrnm',\
+                    'vldntl')",
+
+
+
+             "INSERT INTO CardQuartets(CardID,CardQ1,CardQ2,CardQ3,CardQ4)\
+              VALUES('C01111',\
+                     'HASHEDxNASDKFCHEJSSMASJVIDIdDM+vs',\
+                     'HASHEDxNASDKFCHEJSSMASJVIDIasdaSD',\
+                     'HASHEDxNASDKFCHEJSSMASJV23zI5DIDn',\
+                     '2345')",
+
+
+          "INSERT INTO Memberships(MShipNum,MemberID,Type,StartDate,EndDate,Duration,Price)\
+             VALUES('mshpnm',\
+                    'M0001',\
+                    'typ',\
+                    'strdt',\
+                    'endt',\
+                    'drtn',\
+                    'prc')",
+
+          
+          "INSERT INTO Discounts(VehicleCount,Discounts)\
+            VALUES('vhclcnt',\
+                   'dscnts')",
+                
+
+
+         "INSERT INTO ParkingPrices(VehicleType,StartingFee,ExtraFee)\
+           VALUES('vhctyp',\
+                  'strngf',\
+                  'extrf')",
+
+
+        "INSERT INTO ChargingPrices(VehicleType,ChargingFeeT1,ChargingFeeT2,IdleFee)\
+           VALUES('vhctyp',\
+                   'chrgf1',\
+                   'chrgf2',\
+                   'ıdlfe')",
+         
+         
+         "INSERT INTO ChargerTiers(ProfileNumber,Tier,VehicleType,LowerBound,UpperBound)\
+          VALUES('prflnmbr',\
+                 'tie',\
+                 'vhctyp',\
+                'lwrbnd',\
+                'uprboud')"
+
+
+
+
+
+
+       )
+    
+        for query in demo_queries:
+            execute(query, conn)
+
+        
