@@ -1,6 +1,16 @@
 import sqlite3
 
 
+class Database(object):
+    """docstring for Database"""
+    def __init__(self, file):
+        super(Database, self).__init__()
+        self.file = str(file)
+
+    def create(self):
+        init(self.file)
+
+
 def init(file):
     c = open(file)
     # create Firm table
