@@ -15,5 +15,7 @@ sp.run(cmd, shell=True)
 
 # Set the database
 database.init(config.FILE_DATABASE)
-sp.run('export FLASK_APP=app.py', shell=True)
-sp.run('flask run', shell=True)
+
+# Set the server and run it
+server = server.Server(config.FILE_FLASK, config.DEBUG)
+server.start()
