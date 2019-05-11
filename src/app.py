@@ -1,5 +1,6 @@
 from flask import Flask
 from flask import request
+from flask import render_template
 app = Flask(__name__)
 
 
@@ -17,8 +18,28 @@ def shutdown_server():
 #    @app.routes    #
 # ################# #
 @app.route('/')
-def hello_world():
-    return 'Hello World'
+def home():
+    return render_template('index.html')
+
+
+@app.route('/services')
+def services():
+    return render_template('services.html')
+
+
+@app.route('/about')
+def about():
+    return render_template('about.html')
+
+
+@app.route('/contact')
+def contact():
+    return render_template('contact.html')
+
+
+@app.route('/login')
+def login():
+    return render_template('log-in.html')
 
 
 @app.route('/hi')
