@@ -18,38 +18,49 @@ def init(file, clean=True):
         delete_tables(c)
     # create Firm table
     Firm_sql = "CREATE TABLE Firm(\
-        'FirmAlias' TEXT NOT NULL UNIQUE,\
-        'FirmNAME' TEXT  NOT NULL,\
-        'EMail' TEXT UNIQUE,\
-        'Telephone' TEXT UNIQUE,\
-        'Street_1' TEXT UNIQUE,\
-        'Street_2' TEXT UNIQUE,\
-        'City' TEXT UNIQUE,\
-        'Region' TEXT UNIQUE,\
-        'PostalCode' TEXT UNIQUE,\
-        PRIMARY KEY ('FirmAlias'))"
+        'FirmAlias'     TEXT\
+            PRIMARY KEY\
+            UNIQUE\
+            NOT NULL,\
+        'FirmName'      TEXT\
+            NOT NULL,\
+        'EMail'         TEXT\
+            UNIQUE,\
+        'Telephone'     TEXT\
+            UNIQUE,\
+        'Street_1'      TEXT,\
+        'Street_2'      TEXT,\
+        'City'          TEXT,\
+        'Region'        TEXT,\
+        'PostalCode'    TEXT)"
     execute(Firm_sql, c)
 
     # create ParkingLots
-    ParkingLots_sql = "Create Table ParkingLots(\
-        'LotAlias' TEXT NOT NULL UNIQUE,\
-        'FirmAlias' TEXT UNIQUE,\
-        'LotName' TEXT NOT NULL UNIQUE,\
-        'PriceMultiplier' TEXT NOT NULL UNIQUE,\
-        'Street_1' TEXT UNIQUE,\
-        'Street_2' TEXT UNIQUE,\
-        'City' TEXT UNIQUE,\
-        'Region' TEXT UNIQUE,\
-        'PostalCode' TEXT UNIQUE,\
-        PRIMARY KEY ('LotAlias'),\
-        CONSTRAINT FK_TO_FIRM\
-            FOREIGN KEY (FirmAlias)\
-            REFERENCES Firm(FirmAlias))"
+    ParkingLots_sql = "CREATE TABLE ParkingLots(\
+        'LotAlias'          TEXT\
+            PRIMARY KEY\
+            UNIQUE\
+            NOT NULL,\
+        'FirmAlias'         TEXT\
+            REFERENCES Firm(FirmAlias)\
+            NOT NULL,\
+        'LotName'           TEXT\
+            UNIQUE\
+            NOT NULL,\
+        'PriceMultiplier'   REAL\
+            UNIQUE\
+            NOT NULL,\
+        'Street_1'          TEXT,\
+        'Street_2'          TEXT,\
+        'City'              TEXT,\
+        'Region'            TEXT,\
+        'PostalCode'        TEXT)"
     execute(ParkingLots_sql, c)
 
     # create table Floors
     Floors_sql = "CREATE TABLE Floors(\
-        'FloorNumber'   TEXT NOT NULL,\
+        'FloorNumber'   TEXT\
+            NOT NULL,\
         'LotAlias'      TEXT\
             UNIQUE\
             REFERENCES ParkingLots(LotAlias),\
@@ -60,82 +71,116 @@ def init(file, clean=True):
 
     # create table RentalAreas
     Rental_Areas_sql = "CREATE TABLE RentalAreas(\
-       'RentalID' TEXT UNIQUE,\
-       'FloorNumber'   TEXT NOT NULL\
-        REFERENCES Floors(Floornumber),\
-        'LotAlias' TEXT UNIQUE\
-        REFERENCES Floors(LotAlias),\
+       'RentalID'       TEXT\
+            UNIQUE,\
+       'FloorNumber'    TEXT\
+            REFERENCES Floors(FloorNumber)\
+            NOT NULL,\
+        'LotAlias'      TEXT\
+            REFERENCES Floors(LotAlias)\
+            UNIQUE,\
         PRIMARY KEY(FloorNumber, LotAlias, RentalID))"
     execute(Rental_Areas_sql, c)
 
     # create table ChargeSpots
     Charge_spots_sql = "CREATE TABLE ChargeSpots(\
-       'CSpotID' TEXT NOT NULL,\
-       'LotAlias' TEXT UNIQUE\
-         REFERENCES Floors(LotAlias),\
-        'Floornumber' TEXT UNIQUE\
-         REFERENCES Floors(Floornumber),\
+       'CSpotID'        TEXT\
+            NOT NULL,\
+       'LotAlias'       TEXT\
+            REFERENCES Floors(LotAlias)\
+            UNIQUE,\
+        'FloorNumber'   TEXT\
+            REFERENCES Floors(FloorNumber)\
+            UNIQUE,\
         PRIMARY KEY('CSpotID','LotAlias'))"
     execute(Charge_spots_sql, c)
 
     # create table ParkingSpots
     Parking_Spots_sql = "CREATE TABLE ParkingSpots(\
-        'PSpotID' TEXT NOT NULL PRIMARY KEY,\
-        'LotAlias' TEXT UNIQUE\
-         REFERENCES Chargespots(LotAlias),\
-         'FloorNumber'   TEXT NOT NULL\
-        REFERENCES Floors(Floornumber))"
+        'PSpotID'       TEXT\
+            PRIMARY KEY\
+            NOT NULL,\
+        'LotAlias'      TEXT\
+            REFERENCES ChargeSpots(LotAlias)\
+            UNIQUE,\
+         'FloorNumber'  TEXT\
+            REFERENCES Floors(FloorNumber)\
+            NOT NULL)"
     execute(Parking_Spots_sql, c)
 
     # create table ReservedSpots
     Reserved_Spots_sql = "CREATE TABLE ReservedSpots(\
-        'PSpotID' TEXT NOT NULL\
-         REFERENCES ParkingSpots(PSpotID),\
-         'MShipNum'  TEXT NOT NULL\
-        REFERENCES MembershipRentals(MshipNum),\
-        PRIMARY KEY('PSpotID','MShipNum'))"
+        'PSpotID'       TEXT\
+            REFERENCES ParkingSpots(PSpotID)\
+            NOT NULL,\
+        'MShipNum'      TEXT\
+            REFERENCES MembershipRentals(MshipNum)\
+            NOT NULL,\
+        PRIMARY KEY('PSpotID', 'MShipNum'))"
     execute(Reserved_Spots_sql, c)
 
     # create table RentalAgreements
     Rental_Agreement_sql = "CREATE TABLE RentalAgreement(\
-         'RentalID' TEXT NOT NULL\
-         REFERENCES RentalAreas(RentalID),\
-         'LotAlias'  TEXT UNIQUE\
-        REFERENCES RentalAreas(LotAlias),\
-        'TenandID'  TEXT UNIQUE\
-        REFERENCES RentalAreas(TenandID),\
-        'StartDate' TEXT NOT NULL,\
-        'EndDate'   TEXT NOT NULL,\
-         'ftent' TEXT NOT NULL,\
-        'Duration' INTEGER NOT NULL,\
-         'Description' TEXT NOT NULL,\
-         PRIMARY KEY(RentalID ,'LotAlias','TenandID'))"
+        'RentalID'      TEXT\
+            REFERENCES RentalAreas(RentalID)\
+            NOT NULL,\
+        'LotAlias'      TEXT\
+            REFERENCES RentalAreas(LotAlias)\
+            UNIQUE,\
+        'TenandID'      TEXT\
+            REFERENCES RentalAreas(TenandID),\
+            UNIQUE\
+        'StartDate'     TEXT\
+            NOT NULL,\
+        'EndDate'       TEXT\
+            NOT NULL,\
+        'Rent'         TEXT\
+            NOT NULL,\
+        'Duration'      INTEGER\
+            NOT NULL,\
+        'Description'   TEXT\
+            NOT NULL,\
+        PRIMARY KEY(RentalID ,'LotAlias','TenandID'))"
 
     execute(Rental_Agreement_sql, c)
 
     # create table TenantContacts
     Tenant_Contacts_sql = "CREATE TABLE TenantContacts(\
-          'TenantID' TEXT NOT NULL PRIMARY KEY,\
-           'Name'    TEXT NOT NULL,\
-            'Telephone' TEXT NOT NULL,\
-            'EMail'  TEXT NOT NULL)"
+        'TenantID'      TEXT\
+            PRIMARY KEY\
+            NOT NULL,\
+        'Name'          TEXT\
+            NOT NULL,\
+        'Telephone'     TEXT\
+            NOT NULL,\
+        'EMail'         TEXT\
+            NOT NULL)"
     execute(Tenant_Contacts_sql, c)
 
     # create table ChargingInfo
     Charging_info_sql = "CREATE TABLE ChargingInfo(\
-                  'CSpotID' TEXT NOT NULL PRIMARY KEY\
-                    REFERENCES ChargeSpots(CSpotID),\
-                    'StartedAt'    TEXT NOT NULL,\
-                    'CPercentage' TEXT NOT NULL,\
-                    'CPower' TEXT NOT NULL,\
-                    'ChargeAt'  TEXT NOT NULL)"
+        'CSpotID'       TEXT\
+            PRIMARY KEY\
+            REFERENCES ChargeSpots(CSpotID)\
+            NOT NULL,\
+        'StartedAt'     TEXT\
+            NOT NULL,\
+        'CPercentage'   TEXT\
+            NOT NULL,\
+        'CPower'        TEXT\
+            NOT NULL,\
+        'ChargeAt'      TEXT\
+            NOT NULL)"
     execute(Charging_info_sql, c)
 
     # create table ParkingInfo
-    Parking_info_sql = "CREATE TABLE Parkinginfo(\
-                    'PSpotID' TEXT NOT NULL PRIMARY KEY\
-                    REFERENCES ParkingSpots(PSpotID),\
-                    'StartedAt' TEXT NOT NULL)"
+    Parking_info_sql = "CREATE TABLE ParkingInfo(\
+        'PSpotID'       TEXT\
+            PRIMARY KEY\
+            REFERENCES ParkingSpots(PSpotID)\
+            NOT NULL,\
+        'StartedAt'     TEXT\
+            NOT NULL)"
     execute(Parking_info_sql, c)
 
     users_sql = "CREATE TABLE Users\
@@ -415,7 +460,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS RentalAgreement")
     cursor.execute("DROP TABLE IF EXISTS TenantContacts")
     cursor.execute("DROP TABLE IF EXISTS ChargingInfo")
-    cursor.execute("DROP TABLE IF EXISTS Parkinginfo")
+    cursor.execute("DROP TABLE IF EXISTS ParkingInfo")
     cursor.execute("DROP TABLE IF EXISTS Users")
     cursor.execute("DROP TABLE IF EXISTS UsersCreditentials")
     cursor.execute("DROP TABLE IF EXISTS Permissions")
@@ -518,10 +563,11 @@ def fill_tables(conn, demo=True, verbose=False):
             VALUES(31, '(11111) SUPERUSER=Dev.+Admin+Manager+Tenant+Member')")
     for query in queries:
         execute(query, conn)
-    
+
     if cfg.DEMO:
         demo_queries = (
-            "INSERT INTO Firm(FirmAlias, FirmNAME, EMail,Telephone,Street_1,Street_2,City,Region,PostalCode)\
+            "INSERT INTO Firm(FirmAlias, FirmName, EMail, Telephone,\
+                                Street_1, Street_2, City, Region, PostalCode)\
                 VALUES('sa',\
                     'sabancı',\
                     'tsuruta@att.net',\
@@ -531,177 +577,107 @@ def fill_tables(conn, demo=True, verbose=False):
                     'antalya',\
                     'muratpaşa',\
                     '07042')",
-        
-        
-            "INSERT INTO ParkingLots(LotAlias,FirmAlias,LotName,PriceMultiplier,Street_1,Street_2,City,Region,PostalCode)\
+            "INSERT INTO ParkingLots(LotAlias, FirmAlias, LotName,\
+                                PriceMultiplier, Street_1, Street_2,\
+                                City, Region, PostalCode)\
                 VALUES('ltals',\
                     'Frmls',\
                     'LtNm',\
-                    'PrcMltplr',\
+                    1.0,\
                     'Strt1',\
                     'Strt2',\
                     'Cty',\
                     'Rgn',\
                     'PstCd')",
-                
-
-
-            "INSERT INTO Floors(FloorNumber,LotAlias)\
-                VALUES('flrnmb',\
-                       'ltals')",
-            "INSERT INTO Floors(FloorNumber,LotAlias)\
-                VALUES('flrnmb',\
-                       'ltals')",
-            "INSERT INTO Floors(FloorNumber,LotAlias)\
-                VALUES('flrnmb',\
-                       'ltals')",
-
-          
+            "INSERT INTO Floors(FloorNumber, LotAlias)\
+                VALUES('flrnmb', 'ltals')",
+            "INSERT INTO Floors(FloorNumber, LotAlias)\
+                VALUES('flrnmb', 'ltals')",
+            "INSERT INTO Floors(FloorNumber, LotAlias)\
+                VALUES('flrnmb', 'ltals')",
             "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
+                VALUES('R00101', 'Flr_8', 'ltals')",
+            "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
+                VALUES('C01111', 'Ltals', 'Flr_8')",
+            "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
+                VALUES('PSPD', 'Ltals','flr_8')",
+            "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
+                VALUES('P01100', 'mshpnm')",
+            "INSERT INTO RentalAgreement(RentalID, LotAlias, TenandID,\
+                                        StartDate, EndDate, Rent, Duration,\
+                                        Description)\
                 VALUES('R00101',\
-                    'Flr_8',\
-                    'ltals')",
-            
-
-         
-         
-          "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
-          VALUES('C01111',\
-                    'Ltals',\
-                    'Flr_8')",
-               
-          
-
-           
-           "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
-            VALUES('PSPD',\
-                   'Ltals',\
-                   'flr_8')",
-           
-
-            
-        
-          "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
-           VALUES('P01100',\
-                  'mshpnm')",
-           
-          
-          
-          
-          
-          "INSERT INTO RentalAgreement(RentalID,LotAlias,TenandID,StartDate,EndDate,ftent,Duration,Description)\
-           VALUES('R00101',\
-                    'ltals',\
-                    'T010101',\
-                    'strdt',\
-                    'endt',\
-                    'ftnt',\
-                    'drtn',\
-                    'dscrptn')",
-
-            "INSERT INTO TenantContacts(TenantID,Name,Telephone,EMail)\
+                        'ltals',\
+                        'T010101',\
+                        'strdt',\
+                        'endt',\
+                        'ftnt',\
+                        'drtn',\
+                        'dscrptn')",
+            "INSERT INTO TenantContacts(TenantID, Name, Telephone, EMail)\
                 VALUES('T010101',\
                     'nm',\
                     'Telephone',\
                     'parkmanager@gmail.com')",
-              
-
-           "INSERT INTO ChargingInfo(CSpotID,StartedAt,CPercentage,CPower,ChargeAt)\
-            VALUES('C01111',\
-                   'strdt',\
-                   'cprctg',\
-                   'cpwr',\
-                   'chrgt')",
-            
-
-
-        
-            "INSERT INTO ParkingInfo(PSpotID,StartedAt)\
+            "INSERT INTO ChargingInfo(CSpotID, StartedAt, CPercentage, CPower,\
+                                        ChargeAt)\
+                VALUES('C01111', 'strdt', 'cprctg', 'cpwr', 'chrgt')",
+            "INSERT INTO ParkingInfo(PSpotID, StartedAt)\
              VALUES('P01100',\
                     'strdt')",
-
             "INSERT INTO Users(UserID,UserName,EMail)\
                 VALUES('S0001',\
                        'manager',\
                        'parkmanager@gmail.com')",
-           
-           
-            "INSERT INTO UsersCreditentials(UserID,Password)\
+            "INSERT INTO UsersCreditentials(UserID, Password)\
                 VALUES('0001',\
                        '01000')",
-
-            
-           "INSERT INTO Members(MemberID,UserID,MemberName)\
-            VALUES('M00011',\
-                   'S0001',\
-                   'mmbrnm')",
-
-            
-             "INSERT INTO WalletAccounts(WalletID,MemberID)\
-             VALUES('W00101',\
-                    'M00011')",
-
-            
-             "INSERT INTO CreditCards(CardID,WalletID,HolderName,ValidUntil)\
-             VALUES('C01111',\
-                    'W00101',\
-                    'hldrnm',\
-                    'vldntl')",
-
-
-
-             "INSERT INTO CardQuartets(CardID,CardQ1,CardQ2,CardQ3,CardQ4)\
-              VALUES('C01111',\
+            "INSERT INTO Members(MemberID, UserID, MemberName)\
+                VALUES('M00011',\
+                        'S0001',\
+                        'mmbrnm')",
+            "INSERT INTO WalletAccounts(WalletID, MemberID)\
+                VALUES('W00101',\
+                        'M00011')",
+            "INSERT INTO CreditCards(CardID, WalletID, HolderName, ValidUntil)\
+                 VALUES('C01111',\
+                        'W00101',\
+                        'hldrnm',\
+                        'vldntl')",
+            "INSERT INTO CardQuartets(CardID,CardQ1,CardQ2,CardQ3,CardQ4)\
+                VALUES('C01111',\
                      'HASHEDxNASDKFCHEJSSMASJVIDIdDM+vs',\
                      'HASHEDxNASDKFCHEJSSMASJVIDIasdaSD',\
                      'HASHEDxNASDKFCHEJSSMASJV23zI5DIDn',\
                      '2345')",
-
-
-          "INSERT INTO Memberships(MShipNum,MemberID,Type,StartDate,EndDate,Duration,Price)\
-             VALUES('mshpnm',\
-                    'M0001',\
-                    'typ',\
-                    'strdt',\
-                    'endt',\
-                    'drtn',\
-                    'prc')",
-
-          
-          "INSERT INTO Discounts(VehicleCount,Discounts)\
-            VALUES('vhclcnt',\
-                   'dscnts')",
-                
-
-
-         "INSERT INTO ParkingPrices(VehicleType,StartingFee,ExtraFee)\
-           VALUES('vhctyp',\
-                  'strngf',\
-                  'extrf')",
-
-
-        "INSERT INTO ChargingPrices(VehicleType,ChargingFeeT1,ChargingFeeT2,IdleFee)\
-           VALUES('vhctyp',\
-                   'chrgf1',\
-                   'chrgf2',\
-                   'ıdlfe')",
-         
-         
-         "INSERT INTO ChargerTiers(ProfileNumber,Tier,VehicleType,LowerBound,UpperBound)\
-          VALUES('prflnmbr',\
-                 'tie',\
-                 'vhctyp',\
-                'lwrbnd',\
-                'uprboud')"
-
-
-
-
-
-
-       )
-    
+            "INSERT INTO Memberships(MShipNum, MemberID, Type, StartDate,\
+                                    EndDate, Duration, Price)\
+                VALUES('mshpnm',\
+                        'M0001',\
+                        'typ',\
+                        '2019-05-15',\
+                        '2019-06-20',\
+                        35,\
+                        100)",
+            "INSERT INTO Discounts(VehicleCount, Discounts)\
+                VALUES('vhclcnt',\
+                       'dscnts')",
+            "INSERT INTO ParkingPrices(VehicleType, StartingFee, ExtraFee)\
+                VALUES('vhctyp',\
+                      'strngf',\
+                      'extrf')",
+            "INSERT INTO ChargingPrices(VehicleType, ChargingFeeT1,\
+                                        ChargingFeeT2, IdleFee)\
+                VALUES('vhctyp',\
+                       'chrgf1',\
+                       'chrgf2',\
+                       'ıdlfe')",
+            "INSERT INTO ChargerTiers(ProfileNumber, Tier, VehicleType,\
+                                        LowerBound, UpperBound)\
+                VALUES('prflnmbr',\
+                        'tie',\
+                        'vhctyp',\
+                        'lwrbnd',\
+                        'uprboud')")
         for query in demo_queries:
             execute(query, conn)
-
-        
