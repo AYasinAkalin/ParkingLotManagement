@@ -454,9 +454,116 @@ def fill_tables(conn, demo=True, verbose=False):
         "INSERT INTO ChargerTiers VALUES(4, 2, 'Motorcycle', 0, 12)")
     for query in queries:
         execute(query, conn)
-    '''
-    if demo:
-        demo_queries = ()
-        for queiry in demo_queries:
+    
+    if cfg.DEMO:
+        demo_queries = (
+            "INSERT INTO Firm(FirmAlias, FirmNAME, EMail,Telephone,Street_1,Street_2,City,Region,PostalCode)\
+                VALUES('sa',\
+                    'sabancı',\
+                    'tsuruta@att.net',\
+                    '0539471',\
+                    '8591 South Mountainview Road Montclair',\
+                    'NJ 07042',\
+                    'antalya',\
+                    'muratpaşa',\
+                    '07042')",
+        
+        
+            "INSERT INTO ParkingLots(LotAlias,FirmAlias,LotName,PriceMultiplier,Street_1,Street_2,City,Region,PostalCode)\
+                VALUES('ltls',\
+                'Frmls',\
+                'LtNm',\
+                'PrcMltplr',\
+                'Strt1',\
+                'Strt2',\
+                'Cty',\
+                'Rgn',\
+                'PstCd')",
+                
+
+
+         "INSERT INTO Floors(FloorNumber,LotAlias)\
+                VALUES('flrnmb',\
+                       'ltAls')",
+               
+          
+
+          
+          "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
+          VALUES('Rntld',\
+                 'FlrNmbr',\
+                  'ltAls')",
+            
+
+         
+         
+          "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
+          VALUES('CSpotID',\
+                 'LotAlias',\
+                 'Floornumber')",
+               
+          
+
+           
+           "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
+            VALUES('PSPD',\
+                   'LTLS',\
+                   'flrnmb')",
+           
+
+            
+        
+          "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
+           VALUES('psptd',\
+                  'mshpnm')",
+           
+          
+          
+          
+          
+          "INSERT INTO RentalAgreement(RentalID,LotAlias,TenandID,StartDate,EndDate,ftent,Duration,Description)\
+           VALUES('rntld',\
+                 'ltls',\
+                 'tnnd',\
+                 'strdt',\
+                 'ndt',\
+                 'ftnt',\
+                 'drtn',\
+                 'dscrptn')",
+
+            "INSERT INTO TenantContacts(TenantID,Name,Telephone,EMail)\
+                VALUES('tntd',\
+                'nm',\
+                'Telephone',\
+                'EMail')",
+              
+
+           "INSERT INTO ChargingInfo(CSpotID,StartedAt,CPercentage,CPower,ChargeAt)\
+            VALUES('cspd',\
+                   'strdt',\
+                   'cprctg',\
+                   'cpwr',\
+                   'chrgt')",
+            
+
+
+        
+            "INSERT INTO ParkingInfo(PSpotID,StartedAt)\
+             VALUES('psptd',\
+                    'strdt')",
+
+            "INSERT INTO Users(UserID,UserName,EMail)\
+                VALUES('0001',\
+                       'manager',\
+                       'parkmanager@gmail.com')",
+            "INSERT INTO UsersCreditentials(UserID,Password)\
+                VALUES('0001',\
+                       'psswrd')"  
+
+           
+           )
+    
+        for query in demo_queries:
             execute(query, conn)
-    '''
+
+        
