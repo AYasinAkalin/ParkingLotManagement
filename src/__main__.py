@@ -1,11 +1,22 @@
 # __main__.py
 import subprocess as sp
 import database
+import server
 import config
-cmd = 'pip install -r ' + str(config.FILE_REQS)
+import definitions
+definitions.init()
+
+# Install dependencies
+options = ''
+if config.SILENT_INSTALL:
+    options += ' --quiet'
+cmd = 'pip install' + options + ' -r ' + str(config.FILE_REQS)
 sp.run(cmd, shell=True)
-database.init("parkinglot.db", clean=config.CLEAN_DB)
-if config.DEBUG:
-    sp.run('export FLASK_DEBUG=1', shell=True)
-sp.run('export FLASK_APP=app.py', shell=True)
-sp.run('flask run', shell=True)
+
+# Set the database
+db = database.Database(config.FILE_DATABASE)
+db.create(clean=config.CLEAN_DB)
+
+# Set the server and run it
+server = server.Server(config.FILE_FLASK, config.DEBUG)
+server.start()

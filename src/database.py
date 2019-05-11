@@ -2,6 +2,16 @@ import sqlite3
 import config as cfg
 
 
+class Database(object):
+    """docstring for Database"""
+    def __init__(self, file):
+        super(Database, self).__init__()
+        self.file = str(file)
+
+    def create(self, clean=True):
+        init(self.file, clean=clean)
+
+
 def init(file, clean=True):
     c = open(file)
     if clean:
@@ -383,7 +393,7 @@ def init(file, clean=True):
 
 
 def open(file):
-    conn = sqlite3.connect(file)
+    conn = sqlite3.connect(str(file))
     return conn
 
 
