@@ -1,6 +1,10 @@
 <html>
 <head>
-  <title> Parking Lots </title>
+  {% if title %}
+  <title>{{ title }} - {{ brand }} </title>
+  {% else %}
+  <title>{{ brand }} </title>
+  {% endif %}
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>

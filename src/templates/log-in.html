@@ -1,6 +1,6 @@
 <html>
 <head>
-  <title> Login and Registration </title>
+  <title>{{ title }} - {{ brand }}</title>
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
@@ -22,10 +22,10 @@
     <div class="form">
 
         <form class="register-form">
-          <input type="text" placeholder="name">
-          <input type="text" placeholder="password">
-          <input type="text" placeholder="e-mail adress">
-          <button> Create </button>
+          <input type="text" name="name" placeholder="name">
+          <input type="text" name="pass" placeholder="password">
+          <input type="text" name="mail" placeholder="e-mail adress">
+          <button><input type="submit" name=""></button>
           <p class="message"> Already Registered <a href="#"> Log in </a></p>
         </form>
 

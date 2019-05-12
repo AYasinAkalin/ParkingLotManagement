@@ -5,6 +5,12 @@ app = Flask(__name__)
 
 
 # ################# #
+#     VARIABLES     #
+# ################# #
+brand = 'PLMS'
+
+
+# ################# #
 #     FUNCTIONS     #
 # ################# #
 def shutdown_server():
@@ -19,27 +25,28 @@ def shutdown_server():
 # ################# #
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return render_template('index.html', brand=brand, title='Home')
 
 
 @app.route('/services')
 def services():
-    return render_template('services.html')
+    return render_template('services.html', brand=brand, title='Services')
 
 
 @app.route('/about')
 def about():
-    return render_template('about.html')
+    return render_template('about.html', brand=brand, title='About')
 
 
 @app.route('/contact')
 def contact():
-    return render_template('contact.html')
+    return render_template('contact.html', brand=brand, title='Contact')
 
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
-    return render_template('log-in.html')
+    if request.method == 'GET':
+        return render_template('log-in.html', brand=brand, title='Login')
 
 
 @app.route('/hi')
