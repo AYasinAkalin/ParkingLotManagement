@@ -6,11 +6,13 @@
   {% else %}
   <title>{{ brand }}</title>
   {% endif %}
-  <!-- <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css"> -->
+  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body>
   {% include "header.html" %}
-  {% block content%}{% endblock %}
+  <div class="main-content">
+    {% block content%}{% endblock %}
+  </div>
   {% include "footer.html" %}
   <!-- Javascript Libraries required for Bootstrap -->
   <!-- Keep them at the bottom of <body> -->
