@@ -31,6 +31,10 @@ footer
 .main-content
 {
   min-height: var{--content-height};
+
+  /* Stick footer to the bottom - Part: 2/2 */
+  /* Credit: https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer */
+  flex: 1;
 }
 
 .main-nav
@@ -81,6 +85,12 @@ body
     background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
     font-family: monospace;
     height: 100vh;
+
+    /* Stick footer to the bottom - Part: 1/2 */
+    /* Credit: https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer */
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
     background-position: center;
     background-size: cover;
 }
