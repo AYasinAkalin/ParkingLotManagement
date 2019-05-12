@@ -1,28 +1,6 @@
-<html>
-<head>
-  {% if title %}
-  <title>{{ title }} - {{ brand }} </title>
-  {% else %}
-  <title>{{ brand }} </title>
-  {% endif %}
-  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <header>
+<!DOCTYPE html>
+{% extends "base.html" %}
 
-
-      <div class="row">
-      <ul  class="main-nav">
-        <li class="active"><a href="/"> HOME </a> </li>
-        <li><a href="/services"> SERVICES </a> </li>
-        <li><a href="/about"> ABOUT </a> </li>
-        <li><a href="/contact"> CONTACT </a> </li>
-        <li class="login"><a href="/login"> LOG IN </a> </li>
-      </ul>
-    </div>
-
-
-
-    </header>
-</body>
-</html>
+{% block content%}
+  <h1>Home Page</h1>
+{% endblock %}
