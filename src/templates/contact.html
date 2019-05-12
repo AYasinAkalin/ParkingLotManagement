@@ -1,27 +1,5 @@
-<html>
-<head>
-  <title> Parking Lots </title>
-  <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
-</head>
-<body>
-    <header>
+{% extends "base.html" %}
 
-
-      <div class="row">
-      <ul  class="main-nav">
-        <li><a href="/"> HOME </a> </li>
-        <li><a href="/services"> SERVICES </a> </li>
-        <li><a href="/about"> ABOUT </a> </li>
-        <li class="active"><a href="/contact"> CONTACT </a> </li>
-        <li><a href="/login"> LOG IN </a> </li>
-      </ul>
-    </div>
-
-
-
-    </header>
-
-    <div> çok uykum var </div>
-
-</body>
-</html>
+{% block content%}
+  <h1>Contact Page</h1>
+{% endblock %}

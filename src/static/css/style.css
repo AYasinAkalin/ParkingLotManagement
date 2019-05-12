@@ -1,3 +1,14 @@
+/*********************************/
+/*           VARIABLES           */
+/*********************************/
+:root{
+  --header-height: 100px;
+  --footer-height: 60px;
+  /* More info on vh: https://www.w3.org/TR/css3-values/#viewport-relative-lengths */
+  /* Fix #8 Credit: https://stackoverflow.com/a/26090114/4258598 */
+  --content-height: calc(100vh - var(--header-height) - var(--footer-height));
+}
+
 *
 {
   margin: 0;
@@ -6,10 +17,23 @@
 
 header
 {
-    background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
+    height: var(--header-height);
+    flex-shrink: 0; /* Fix for Safari. Credit: https://stackoverflow.com/a/34146411/4258598 */
+}
+
+footer
+{
+  height: var(--footer-height);
+  flex-shrink: 0; /* Fix for Safari. Credit: https://stackoverflow.com/a/34146411/4258598 */
+}
+
+.main-content
+{
+  min-height: var{--content-height};
+  flex-shrink: 0; /* Fix for Safari. Credit: https://stackoverflow.com/a/34146411/4258598 */
+  /* Stick footer to the bottom - Part: 2/2 */
+  /* Credit: https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer */
+  flex: 1;
 }
 
 .main-nav
@@ -57,9 +81,19 @@ header
 
 body
 {
-    background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
     font-family: monospace;
     height: 100vh;
+
+    /* Stick footer to the bottom - Part: 1/2 */
+    /* Credit: https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer */
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+body.background
+{
+    background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
     background-position: center;
     background-size: cover;
 }
