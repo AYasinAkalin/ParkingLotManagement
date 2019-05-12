@@ -8,7 +8,7 @@
   {% endif %}
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
-<body>
+<body class="background">
   {% include "header.html" %}
   <div class="main-content">
     {% block content%}{% endblock %}

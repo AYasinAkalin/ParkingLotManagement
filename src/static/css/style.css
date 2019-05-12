@@ -17,10 +17,7 @@
 
 header
 {
-    background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
     height: var(--header-height);
-    background-size: cover;
-    background-position: center;
 }
 
 footer
@@ -82,7 +79,6 @@ footer
 
 body
 {
-    background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
     font-family: monospace;
     height: 100vh;
 
@@ -91,6 +87,11 @@ body
     display: flex;
     min-height: 100vh;
     flex-direction: column;
+}
+
+body.background
+{
+    background-image:linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url(../img/parking-lot.jpg);
     background-position: center;
     background-size: cover;
 }
