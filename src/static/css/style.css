@@ -18,17 +18,19 @@
 header
 {
     height: var(--header-height);
+    flex-shrink: 0; /* Fix for Safari. Credit: https://stackoverflow.com/a/34146411/4258598 */
 }
 
 footer
 {
   height: var(--footer-height);
+  flex-shrink: 0; /* Fix for Safari. Credit: https://stackoverflow.com/a/34146411/4258598 */
 }
 
 .main-content
 {
   min-height: var{--content-height};
-
+  flex-shrink: 0; /* Fix for Safari. Credit: https://stackoverflow.com/a/34146411/4258598 */
   /* Stick footer to the bottom - Part: 2/2 */
   /* Credit: https://philipwalton.github.io/solved-by-flexbox/demos/sticky-footer */
   flex: 1;
