@@ -31,6 +31,30 @@ class Database(object):
         else:
             pass
 
+    def test(self, verbose=False):
+        self.__backup()  # Backup database
+        try:
+            from tests import firm
+            import unittest
+
+            # Get every test suites in .py files in module /tests
+            test_suites = []
+            test_suites.append(unittest.TestLoader().loadTestsFromModule(firm))
+
+            # Create an object to run the tests
+            if verbose:
+                test_runner = unittest.TextTestRunner(verbosity=2)
+            else:
+                test_runner = unittest.TextTestRunner()
+
+            # Run each test suite
+            for suite in test_suites:
+                test_runner.run(suite)
+        except Exception as e:
+            raise e
+        finally:
+            self.__restore()  # Restore the backup
+
     def populate(self):
         fill_tables_demo(self.file)
 
