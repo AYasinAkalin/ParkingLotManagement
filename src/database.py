@@ -141,7 +141,6 @@ def init(file, clean=True):
         'Description'   TEXT\
             NOT NULL,\
         PRIMARY KEY(RentalID ,'LotAlias','TenandID'))"
-
     execute(Rental_Agreement_sql, c)
 
     # create table TenantContacts
@@ -183,6 +182,7 @@ def init(file, clean=True):
             NOT NULL)"
     execute(Parking_info_sql, c)
 
+    # create table Users
     users_sql = "CREATE TABLE Users\
         (\
             'UserID'    TEXT\
@@ -201,6 +201,8 @@ def init(file, clean=True):
                     ON CONFLICT ABORT\
         )"
     execute(users_sql, c)
+
+    # create table UsersCreditentials
     users_creditentials_sql = "CREATE TABLE UsersCreditentials\
         (\
             'UserID'        TEXT\
@@ -219,6 +221,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(users_creditentials_sql, c)
+
+    # create table Permissions
     permissions_sql = "CREATE TABLE Permissions\
         (\
             'PermissionKey' TEXT\
@@ -226,6 +230,8 @@ def init(file, clean=True):
             'Description'   TEXT\
         )"
     execute(permissions_sql, c)
+
+    # create table UserPermissions
     user_permissions_sql = "CREATE TABLE UserPermissions\
         (\
             'UserID'        TEXT\
@@ -239,6 +245,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(user_permissions_sql, c)
+
+    # create table Members
     members_sql = "CREATE TABLE Members\
         (\
             'MemberID'      TEXT\
@@ -254,6 +262,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(members_sql, c)
+
+    # create table WalletAccounts
     wallet_accounts_sql = "CREATE TABLE WalletAccounts\
         (\
             'WalletID'      TEXT\
@@ -269,6 +279,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(wallet_accounts_sql, c)
+
+    # Create table CreditCards
     credit_cards_sql = "CREATE TABLE CreditCards\
         (\
             'CardID'        TEXT\
@@ -285,6 +297,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(credit_cards_sql, c)
+
+    # Create table CardQuartets
     card_quartets_sql = "CREATE TABLE CardQuartets\
         (\
             'CardID'        TEXT\
@@ -303,6 +317,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"  # Save 1st, 2nd, 3rd quartets encrypted, leave 4th as it is
     execute(card_quartets_sql, c)
+
+    # create table Memberships
     memberships_sql = "CREATE TABLE Memberships\
         (\
             'MShipNum'      TEXT\
@@ -321,6 +337,8 @@ def init(file, clean=True):
             'Price'         REAL\
         )"
     execute(memberships_sql, c)
+
+    # create table MembershipRentals
     membership_rentals_sql = "CREATE TABLE MembershipRentals\
         (\
             'MShipNum'      TEXT\
@@ -332,6 +350,8 @@ def init(file, clean=True):
                 REFERENCES Rentals(RentalType)\
         )"
     execute(membership_rentals_sql, c)
+
+    # create table Rentals
     rentals_sql = "CREATE TABLE Rentals\
         (\
             'RentalType'    INTEGER\
@@ -352,6 +372,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(rentals_sql, c)
+
+    # create table MembershipDiscounts
     membership_discounts_sql = "CREATE TABLE MembershipDiscounts\
         (\
             'MemberID'      TEXT\
@@ -364,6 +386,8 @@ def init(file, clean=True):
                 REFERENCES Discounts(VehicleCount)\
         )"
     execute(membership_discounts_sql, c)
+
+    # create table Discounts
     discounts_sql = "CREATE TABLE Discounts\
         (\
             'VehicleCount'  INTEGER\
@@ -378,6 +402,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(discounts_sql, c)
+
+    # create table ParkingPrices
     parking_prices_sql = "CREATE TABLE ParkingPrices\
         (\
             'VehicleType'   TEXT\
@@ -393,6 +419,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(parking_prices_sql, c)
+
+    # create table ChargingPrices
     charging_prices_sql = "CREATE TABLE ChargingPrices\
         (\
             'VehicleType'   TEXT\
@@ -410,6 +438,8 @@ def init(file, clean=True):
                 NOT NULL\
         )"
     execute(charging_prices_sql, c)
+
+    # create table ChargerTiers
     charger_tier_profiles_sql = "CREATE TABLE ChargerTiers\
         (\
             'ProfileNumber'     INTEGER\
@@ -497,70 +527,70 @@ def fill_tables(conn, demo=True, verbose=False):
         "INSERT INTO ChargerTiers VALUES(2, 1, 'Motorcycle', 12, 999)",
         "INSERT INTO ChargerTiers VALUES(3, 2, 'Car', 60, 60)",
         "INSERT INTO ChargerTiers VALUES(4, 2, 'Motorcycle', 0, 12)",
-        "INSERT INTO Permissions\
-            VALUES(0, '(00000) No permissions')",
-        "INSERT INTO Permissions\
-            VALUES(1, '(00001) Only member permissions')",
-        "INSERT INTO Permissions\
-            VALUES(2, '(00010) Only tenant permission')",
-        "INSERT INTO Permissions\
-            VALUES(3, '(00011) Tenant+Member permissions')",
-        "INSERT INTO Permissions\
-            VALUES(4, '(00100) Only Manager permissions')",
-        "INSERT INTO Permissions\
-            VALUES(5, '(00101) Manager+Member')",
-        "INSERT INTO Permissions\
-            VALUES(6, '(00110) Manager+Tenant')",
-        "INSERT INTO Permissions\
-            VALUES(7, '(00111) Manager+Tenant+Member')",
-        "INSERT INTO Permissions\
-            VALUES(8, '(01000) Only Admin permissions')",
-        "INSERT INTO Permissions\
-            VALUES(9, '(01001) Admin+Member')",
-        "INSERT INTO Permissions \
-            VALUES(10, '(01010) Admin+Tenant')",
-        "INSERT INTO Permissions \
-            VALUES(11, '(01011) Admin+Tenant+Member')",
-        "INSERT INTO Permissions \
-            VALUES(12, '(01100) Admin+Manager')",
-        "INSERT INTO Permissions \
-            VALUES(13, '(01101) Admin+Manager+Member')",
-        "INSERT INTO Permissions \
-            VALUES(14, '(01110) Admin+Manager+Tenant')",
-        "INSERT INTO Permissions \
-            VALUES(15, '(01111) Admin+Manager+Tenant+Member')",
-        "INSERT INTO Permissions \
-            VALUES(16, '(10000) Only Developer permissions')",
-        "INSERT INTO Permissions \
-            VALUES(17, '(10001) Developer+Member')",
-        "INSERT INTO Permissions \
-            VALUES(18, '(10010) Developer+Tenant')",
-        "INSERT INTO Permissions \
-            VALUES(19, '(10011) Developer+Tenant+Member')",
-        "INSERT INTO Permissions \
-            VALUES(20, '(10100) Developer+Manager')",
-        "INSERT INTO Permissions \
-            VALUES(21, '(10101) Developer+Manager+Member')",
-        "INSERT INTO Permissions \
-            VALUES(22, '(10110) Developer+Manager+Tenant')",
-        "INSERT INTO Permissions \
-            VALUES(23, '(10111) Developer+Manager+Tenant+Member')",
-        "INSERT INTO Permissions \
-            VALUES(24, '(11000) Developer+Admin')",
-        "INSERT INTO Permissions \
-            VALUES(25, '(11001) Developer+Admin+Member')",
-        "INSERT INTO Permissions \
-            VALUES(26, '(11010) Developer+Admin+Tenant')",
-        "INSERT INTO Permissions \
-            VALUES(27, '(11011) Developer+Admin+Tenant+Member')",
-        "INSERT INTO Permissions \
-            VALUES(28, '(11100) Developer+Admin+Manager')",
-        "INSERT INTO Permissions \
-            VALUES(29, '(11101) Developer+Admin+Manager+Member')",
-        "INSERT INTO Permissions \
-            VALUES(30, '(11110) Developer+Admin+Manager+Tenant')",
-        "INSERT INTO Permissions \
-            VALUES(31, '(11111) SUPERUSER=Dev.+Admin+Manager+Tenant+Member')")
+        "INSERT INTO Permissions VALUES(0, \
+                '(00000) No permissions')",
+        "INSERT INTO Permissions VALUES(1, \
+                '(00001) Only member permissions')",
+        "INSERT INTO Permissions VALUES(2, \
+                '(00010) Only tenant permission')",
+        "INSERT INTO Permissions VALUES(3, \
+                '(00011) Tenant+Member permissions')",
+        "INSERT INTO Permissions VALUES(4, \
+                '(00100) Only Manager permissions')",
+        "INSERT INTO Permissions VALUES(5, \
+                '(00101) Manager+Member')",
+        "INSERT INTO Permissions VALUES(6, \
+                '(00110) Manager+Tenant')",
+        "INSERT INTO Permissions VALUES(7, \
+                '(00111) Manager+Tenant+Member')",
+        "INSERT INTO Permissions VALUES(8, \
+                '(01000) Only Admin permissions')",
+        "INSERT INTO Permissions VALUES(9, \
+                '(01001) Admin+Member')",
+        "INSERT INTO Permissions VALUES(10,\
+                '(01010) Admin+Tenant')",
+        "INSERT INTO Permissions VALUES(11,\
+                '(01011) Admin+Tenant+Member')",
+        "INSERT INTO Permissions VALUES(12,\
+                '(01100) Admin+Manager')",
+        "INSERT INTO Permissions VALUES(13,\
+                '(01101) Admin+Manager+Member')",
+        "INSERT INTO Permissions VALUES(14,\
+                '(01110) Admin+Manager+Tenant')",
+        "INSERT INTO Permissions VALUES(15,\
+                '(01111) Admin+Manager+Tenant+Member')",
+        "INSERT INTO Permissions VALUES(16,\
+                '(10000) Only Developer permissions')",
+        "INSERT INTO Permissions VALUES(17,\
+                '(10001) Developer+Member')",
+        "INSERT INTO Permissions VALUES(18,\
+                '(10010) Developer+Tenant')",
+        "INSERT INTO Permissions VALUES(19,\
+                '(10011) Developer+Tenant+Member')",
+        "INSERT INTO Permissions VALUES(20,\
+                '(10100) Developer+Manager')",
+        "INSERT INTO Permissions VALUES(21,\
+                '(10101) Developer+Manager+Member')",
+        "INSERT INTO Permissions VALUES(22,\
+                '(10110) Developer+Manager+Tenant')",
+        "INSERT INTO Permissions VALUES(23,\
+                '(10111) Developer+Manager+Tenant+Member')",
+        "INSERT INTO Permissions VALUES(24,\
+                '(11000) Developer+Admin')",
+        "INSERT INTO Permissions VALUES(25,\
+                '(11001) Developer+Admin+Member')",
+        "INSERT INTO Permissions VALUES(26,\
+                '(11010) Developer+Admin+Tenant')",
+        "INSERT INTO Permissions VALUES(27,\
+                '(11011) Developer+Admin+Tenant+Member')",
+        "INSERT INTO Permissions VALUES(28,\
+                '(11100) Developer+Admin+Manager')",
+        "INSERT INTO Permissions VALUES(29,\
+                '(11101) Developer+Admin+Manager+Member')",
+        "INSERT INTO Permissions VALUES(30,\
+                '(11110) Developer+Admin+Manager+Tenant')",
+        "INSERT INTO Permissions VALUES(31,\
+                '(11111) SUPERUSER=Dev.+Admin+Manager+Tenant+Member')")
     for query in queries:
         execute(query, conn)
 
