@@ -16,6 +16,7 @@ sp.run(cmd, shell=True)
 # Set the database
 db = database.Database(config.FILE_DATABASE)
 db.create(clean=config.CLEAN_DB)
+db.test(verbose=config.VERBOSE)
 db.populate()
 
 # Set the server and run it
