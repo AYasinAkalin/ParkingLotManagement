@@ -12,26 +12,59 @@ class Database(object):
         self.file = str(file)
 
     def create(self, clean=True):
-        init(self.file, clean=clean)
+        if cfg.VERBOSE:
+            print('DATABASE is being created. ...', end=' ')
+        try:
+            init(self.file, clean=clean)
+        except Exception as e:
+            if cfg.VERBOSE:
+                print('ERROR')
+            print(e)
+            # raise e
+        if cfg.VERBOSE:
+            print('OK')
 
     def __backup(self):
         ''' Backs up the database at the same directory '''
-        from shutil import copy
-        backup_path = self.file_path.with_suffix('.db.bak')
-        self.file_path.replace(backup_path)
-        copy(backup_path, self.file_path)
-        self.backed = True
+        if cfg.VERBOSE:
+            print('DATABASE is backing up. ...', end=' ')
+        try:
+            from shutil import copy
+            backup_path = self.file_path.with_suffix('.db.bak')
+            self.file_path.replace(backup_path)
+            copy(backup_path, self.file_path)
+            self.backed = True
+        except Exception as e:
+            if cfg.VERBOSE:
+                print('ERROR')
+            print(e)
+            # raise e
+        if cfg.VERBOSE:
+            print('OK')
 
     def __restore(self):
         ''' Restores backed up file to its original location '''
+        if cfg.VERBOSE:
+            print('DATABASE is restoring from backup. ...', end=' ')
         if self.backed:
-            self.file_path.unlink()
-            backup_path = self.file_path.with_suffix('.db.bak')
-            backup_path.replace(self.file_path)
+            try:
+                self.file_path.unlink()
+                backup_path = self.file_path.with_suffix('.db.bak')
+                backup_path.replace(self.file_path)
+            except Exception as e:
+                if cfg.VERBOSE:
+                    print('ERROR')
+                print(e)
+                # raise e
+            if cfg.VERBOSE:
+                print('OK')
         else:
-            pass
+            if cfg.VERBOSE:
+                print('ABORTED')
 
     def test(self, verbose=False):
+        if cfg.VERBOSE:
+            print('TESTING started.')
         self.__backup()  # Backup database
         try:
             from tests import firm
