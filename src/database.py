@@ -31,6 +31,9 @@ class Database(object):
         else:
             pass
 
+    def populate(self):
+        fill_tables_demo(self.file)
+
 
 def init(file, clean=True, verbose=False):
     c = open(file)
@@ -491,7 +494,7 @@ def init(file, clean=True, verbose=False):
                 NOT NULL\
         )"
     execute(charger_tier_profiles_sql, c)
-    fill_tables(conn=c, demo=cfg.DEMO)
+    fill_tables(conn=c, verbose=verbose)
     c.close()
 
 
@@ -538,7 +541,7 @@ def delete_tables(conn):
     conn.commit()
 
 
-def fill_tables(conn, demo=True, verbose=False):
+def fill_tables(conn, verbose=False):
     queries = (
         "INSERT INTO Discounts VALUES (1, 0.10)",
         "INSERT INTO Discounts VALUES (2, 0.15)",
@@ -622,120 +625,153 @@ def fill_tables(conn, demo=True, verbose=False):
     for query in queries:
         execute(query, conn)
 
-    if cfg.DEMO:
-        demo_queries = (
-            "INSERT INTO Firm(FirmAlias, FirmName, EMail, Telephone,\
-                                Street_1, Street_2, City, Region, PostalCode)\
-                VALUES('sa',\
-                    'sabancı',\
-                    'tsuruta@att.net',\
-                    '0539471',\
-                    '8591 South Mountainview Road Montclair',\
-                    'NJ 07042',\
-                    'antalya',\
-                    'muratpaşa',\
-                    '07042')",
-            "INSERT INTO ParkingLots(LotAlias, FirmAlias, LotName,\
-                                PriceMultiplier, Street_1, Street_2,\
-                                City, Region, PostalCode)\
-                VALUES('ltals',\
-                    'Frmls',\
-                    'LtNm',\
-                    1.0,\
-                    'Strt1',\
-                    'Strt2',\
-                    'Cty',\
-                    'Rgn',\
-                    'PstCd')",
-            "INSERT INTO Floors(FloorNumber, LotAlias)\
-                VALUES('flrnmb', 'ltals')",
-            "INSERT INTO Floors(FloorNumber, LotAlias)\
-                VALUES('flrnmb', 'ltals')",
-            "INSERT INTO Floors(FloorNumber, LotAlias)\
-                VALUES('flrnmb', 'ltals')",
-            "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
-                VALUES('R00101', 'Flr_8', 'ltals')",
-            "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
-                VALUES('C01111', 'Ltals', 'Flr_8')",
-            "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
-                VALUES('PSPD', 'Ltals','flr_8')",
-            "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
-                VALUES('P01100', 'mshpnm')",
-            "INSERT INTO RentalAgreement(RentalID, LotAlias, TenandID,\
-                                        StartDate, EndDate, Rent, Duration,\
-                                        Description)\
-                VALUES('R00101',\
-                        'ltals',\
-                        'T010101',\
-                        'strdt',\
-                        'endt',\
-                        'ftnt',\
-                        'drtn',\
-                        'dscrptn')",
-            "INSERT INTO TenantContacts(TenantID, Name, Telephone, EMail)\
-                VALUES('T010101',\
-                    'nm',\
-                    'Telephone',\
-                    'parkmanager@gmail.com')",
-            "INSERT INTO ChargingInfo(CSpotID, StartedAt, CPercentage, CPower,\
-                                        ChargeAt)\
-                VALUES('C01111', 'strdt', 'cprctg', 'cpwr', 'chrgt')",
-            "INSERT INTO ParkingInfo(PSpotID, StartedAt)\
-             VALUES('P01100',\
-                    'strdt')",
-            "INSERT INTO Users(UserID,UserName,EMail)\
-                VALUES('S0001',\
-                       'manager',\
-                       'parkmanager@gmail.com')",
-            "INSERT INTO UsersCreditentials(UserID, Password)\
-                VALUES('0001',\
-                       '01000')",
-            "INSERT INTO Members(MemberID, UserID, MemberName)\
-                VALUES('M00011',\
-                        'S0001',\
-                        'mmbrnm')",
-            "INSERT INTO WalletAccounts(WalletID, MemberID)\
-                VALUES('W00101',\
-                        'M00011')",
-            "INSERT INTO CreditCards(CardID, WalletID, HolderName, ValidUntil)\
-                 VALUES('C01111',\
-                        'W00101',\
-                        'hldrnm',\
-                        'vldntl')",
-            "INSERT INTO CardQuartets(CardID,CardQ1,CardQ2,CardQ3,CardQ4)\
-                VALUES('C01111',\
-                     'HASHEDxNASDKFCHEJSSMASJVIDIdDM+vs',\
-                     'HASHEDxNASDKFCHEJSSMASJVIDIasdaSD',\
-                     'HASHEDxNASDKFCHEJSSMASJV23zI5DIDn',\
-                     '2345')",
-            "INSERT INTO Memberships(MShipNum, MemberID, Type, StartDate,\
-                                    EndDate, Duration, Price)\
-                VALUES('mshpnm',\
-                        'M0001',\
-                        'typ',\
-                        '2019-05-15',\
-                        '2019-06-20',\
-                        35,\
-                        100)",
-            "INSERT INTO Discounts(VehicleCount, Discounts)\
-                VALUES('vhclcnt',\
-                       'dscnts')",
-            "INSERT INTO ParkingPrices(VehicleType, StartingFee, ExtraFee)\
-                VALUES('vhctyp',\
-                      'strngf',\
-                      'extrf')",
-            "INSERT INTO ChargingPrices(VehicleType, ChargingFeeT1,\
-                                        ChargingFeeT2, IdleFee)\
-                VALUES('vhctyp',\
-                       'chrgf1',\
-                       'chrgf2',\
-                       'ıdlfe')",
-            "INSERT INTO ChargerTiers(ProfileNumber, Tier, VehicleType,\
-                                        LowerBound, UpperBound)\
-                VALUES('prflnmbr',\
-                        'tie',\
-                        'vhctyp',\
-                        'lwrbnd',\
-                        'uprboud')")
-        for query in demo_queries:
-            execute(query, conn)
+
+def fill_tables_demo(file):
+    ''' docstring for fill_tables_demo '''
+    conn = open(file)
+    '''
+    demo_queries = (
+        "INSERT INTO Firm(FirmAlias, FirmName, EMail, Telephone,\
+                            Street_1, Street_2, City, Region, PostalCode)\
+            VALUES('sa',\
+                'Sabancı University',\
+                'mail@sabanciuniv.edu',\
+                '0539471',\
+                'Universite Caddesi 27',\
+                '',\
+                'Tuzla',\
+                'Istanbul',\
+                '34956')",
+        "INSERT INTO ParkingLots(LotAlias, FirmAlias, LotName,\
+                            PriceMultiplier, Street_1, Street_2,\
+                            City, Region, PostalCode)\
+            VALUES('FMAN',\
+                'sa',\
+                'FMAN Lot',\
+                1.0,\
+                'Strt1',\
+                'Strt2',\
+                'Cty',\
+                'Rgn',\
+                'PstCd')",
+        "INSERT INTO Floors(FloorNumber, LotAlias)\
+            VALUES('001', 'FMAN')",
+        "INSERT INTO Floors(FloorNumber, LotAlias)\
+            VALUES('001', 'FENS')",
+        "INSERT INTO Floors(FloorNumber, LotAlias)\
+            VALUES('001', 'FASS')",
+        "INSERT INTO RentalAreas(RentalID,FloorNumber,LotAlias)\
+            VALUES('R00101', 'Flr_8', 'ltals')",
+        "INSERT INTO ChargeSpots(CSpotID,LotAlias,Floornumber)\
+            VALUES('C01111', 'Ltals', 'Flr_8')",
+        "INSERT INTO ParkingSpots(PSpotID,LotAlias,FloorNumber)\
+            VALUES('PSPD', 'Ltals','flr_8')",
+        "INSERT INTO ReservedSpots(PSpotID,MShipNum)\
+            VALUES('P01100', 'mshpnm')",
+        "INSERT INTO RentalAgreement(RentalID, LotAlias, TenandID,\
+                                    StartDate, EndDate, Rent, Duration,\
+                                    Description)\
+            VALUES('R00101',\
+                    'ltals',\
+                    'T010101',\
+                    'strdt',\
+                    'endt',\
+                    'ftnt',\
+                    'drtn',\
+                    'dscrptn')",
+        "INSERT INTO TenantContacts(TenantID, Name, Telephone, EMail)\
+            VALUES('T010101',\
+                'nm',\
+                'Telephone',\
+                'parkmanager@gmail.com')",
+        "INSERT INTO ChargingInfo(CSpotID, StartedAt, CPercentage, CPower,\
+                                    ChargeAt)\
+            VALUES('C01111', 'strdt', 'cprctg', 'cpwr', 'chrgt')",
+        "INSERT INTO ParkingInfo(PSpotID, StartedAt)\
+         VALUES('P01100',\
+                'strdt')",
+        "INSERT INTO Users(UserID,UserName,EMail)\
+            VALUES('S0001',\
+                   'manager',\
+                   'parkmanager@gmail.com')",
+        "INSERT INTO UsersCreditentials(UserID, Password)\
+            VALUES('0001',\
+                   '01000')",
+        "INSERT INTO Members(MemberID, UserID, MemberName)\
+            VALUES('M00011',\
+                    'S0001',\
+                    'mmbrnm')",
+        "INSERT INTO WalletAccounts(WalletID, MemberID)\
+            VALUES('W00101',\
+                    'M00011')",
+        "INSERT INTO CreditCards(CardID, WalletID, HolderName, ValidUntil)\
+             VALUES('C01111',\
+                    'W00101',\
+                    'hldrnm',\
+                    'vldntl')",
+        "INSERT INTO CardQuartets(CardID,CardQ1,CardQ2,CardQ3,CardQ4)\
+            VALUES('C01111',\
+                 'HASHEDxNASDKFCHEJSSMASJVIDIdDM+vs',\
+                 'HASHEDxNASDKFCHEJSSMASJVIDIasdaSD',\
+                 'HASHEDxNASDKFCHEJSSMASJV23zI5DIDn',\
+                 '2345')",
+        "INSERT INTO Memberships(MShipNum, MemberID, Type, StartDate,\
+                                EndDate, Duration, Price)\
+            VALUES('mshpnm',\
+                    'M0001',\
+                    'typ',\
+                    '2019-05-15',\
+                    '2019-06-20',\
+                    35,\
+                    100)",
+        "INSERT INTO Discounts(VehicleCount, Discounts)\
+            VALUES('vhclcnt',\
+                   'dscnts')",
+        "INSERT INTO ParkingPrices(VehicleType, StartingFee, ExtraFee)\
+            VALUES('vhctyp',\
+                  'strngf',\
+                  'extrf')",
+        "INSERT INTO ChargingPrices(VehicleType, ChargingFeeT1,\
+                                    ChargingFeeT2, IdleFee)\
+            VALUES('vhctyp',\
+                   'chrgf1',\
+                   'chrgf2',\
+                   'ıdlfe')",
+        "INSERT INTO ChargerTiers(ProfileNumber, Tier, VehicleType,\
+                                    LowerBound, UpperBound)\
+            VALUES('prflnmbr',\
+                    'tie',\
+                    'vhctyp',\
+                    'lwrbnd',\
+                    'uprboud')")
+    '''
+    demo_queries = (
+        # Columns of table 'Firm'
+        # FirmAlias, FirmName, URL, EMail, Telephone, Street_1, Street_2,
+        # City, Region, PostalCode
+        "INSERT INTO Firm VALUES(\
+            'sa',\
+            'Sabancı University',\
+            'sabanciuniv.edu',\
+            'info@sabanciuniv.edu',\
+            '+90 216 483 90 00',\
+            'Universite Caddesi 27',\
+            '',\
+            'Tuzla',\
+            'Istanbul',\
+            '34956')",
+        "INSERT INTO Firm VALUES(\
+            'PBG',\
+            'Parkhaus-Betriebsgesellschaft m.b.H.',\
+            'parkhausfrankfurt.de',\
+            'info@parkhausfrankfurt.de',\
+            '+49 69 5870930',\
+            'Tituscorso 2B',\
+            '',\
+            'Frankfurt am Main',\
+            'Hesse',\
+            '60439')"
+    )
+    for query in demo_queries:
+        execute(query, conn)
+    conn.close()
