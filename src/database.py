@@ -4,15 +4,35 @@ import config as cfg
 
 class Database(object):
     """docstring for Database"""
+    backed = False
+
     def __init__(self, file):
         super(Database, self).__init__()
+        self.file_path = file
         self.file = str(file)
 
     def create(self, clean=True):
         init(self.file, clean=clean)
 
+    def __backup(self):
+        ''' Backs up the database at the same directory '''
+        from shutil import copy
+        backup_path = self.file_path.with_suffix('.db.bak')
+        self.file_path.replace(backup_path)
+        copy(backup_path, self.file_path)
+        self.backed = True
 
-def init(file, clean=True):
+    def __restore(self):
+        ''' Restores backed up file to its original location '''
+        if self.backed:
+            self.file_path.unlink()
+            backup_path = self.file_path.with_suffix('.db.bak')
+            backup_path.replace(self.file_path)
+        else:
+            pass
+
+
+def init(file, clean=True, verbose=False):
     c = open(file)
     if clean:
         delete_tables(c)
