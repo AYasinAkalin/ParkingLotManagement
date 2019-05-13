@@ -128,8 +128,8 @@ def init(file, clean=True):
             REFERENCES RentalAreas(LotAlias)\
             UNIQUE,\
         'TenandID'      TEXT\
-            REFERENCES RentalAreas(TenandID),\
-            UNIQUE\
+            REFERENCES RentalAreas(TenandID)\
+            UNIQUE,\
         'StartDate'     TEXT\
             NOT NULL,\
         'EndDate'       TEXT\
