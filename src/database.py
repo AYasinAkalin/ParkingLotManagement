@@ -21,18 +21,26 @@ def init(file, clean=True):
         'FirmAlias'     TEXT\
             PRIMARY KEY\
             UNIQUE\
+            CHECK (length(FirmAlias) > 0 and length(FirmAlias) <= 5)\
             NOT NULL,\
         'FirmName'      TEXT\
+            UNIQUE\
             NOT NULL,\
+        'URL'           TEXT\
+            UNIQUE\
+            CHECK (like( '_%._%', lower(URL) )),\
         'EMail'         TEXT\
-            UNIQUE,\
+            UNIQUE\
+            CHECK (like( '_%@_%._%', lower(EMail) )),\
         'Telephone'     TEXT\
             UNIQUE,\
         'Street_1'      TEXT,\
         'Street_2'      TEXT,\
         'City'          TEXT,\
         'Region'        TEXT,\
-        'PostalCode'    TEXT)"
+        'PostalCode'    TEXT\
+            CHECK (length(PostalCode) <= 8)\
+        )"
     execute(Firm_sql, c)
 
     # create ParkingLots
