@@ -24,6 +24,11 @@ class Dependency(object):
 
     def install_all(self):
         ''' Install all dependencies listed in requirements.txt '''
-        self.__set_options()
-        cmd = 'pip install' + self.options + ' -r ' + str(config.FILE_REQS)
-        sp.run(cmd, shell=True)
+        from utility import reporting as rprt
+
+        def function(obj, req_file):
+            obj.__set_options()
+            cmd = 'pip install' + obj.options + ' -r ' + req_file
+            sp.run(cmd, shell=True)
+        msg = 'Program requirements are installing.'
+        rprt.report(function, msg, obj=self, req_file=str(config.FILE_REQS))

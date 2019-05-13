@@ -1,5 +1,6 @@
 import sqlite3
 import config as cfg
+from utility import reporting as rprt
 
 
 class Database(object):
@@ -12,59 +13,37 @@ class Database(object):
         self.file = str(file)
 
     def create(self, clean=True):
-        if cfg.VERBOSE:
-            print('DATABASE is being created. ...', end=' ')
-        try:
-            init(self.file, clean=clean)
-        except Exception as e:
-            if cfg.VERBOSE:
-                print('ERROR')
-            print(e)
-            # raise e
-        if cfg.VERBOSE:
-            print('OK')
+        message = 'DATABASE is being created.'
+        rprt.report(init, message, self.file, clean=clean)
 
     def __backup(self):
         ''' Backs up the database at the same directory '''
-        if cfg.VERBOSE:
-            print('DATABASE is backing up. ...', end=' ')
-        try:
+        def backup(obj):
+            ''' a temporary local function
+            Pass 'self' variable of Database object to backup's obj
+                e.g. backup(obj=self)'''
             from shutil import copy
-            backup_path = self.file_path.with_suffix('.db.bak')
-            self.file_path.replace(backup_path)
-            copy(backup_path, self.file_path)
-            self.backed = True
-        except Exception as e:
-            if cfg.VERBOSE:
-                print('ERROR')
-            print(e)
-            # raise e
-        if cfg.VERBOSE:
-            print('OK')
+            backup_path = obj.file_path.with_suffix('.db.bak')
+            obj.file_path.replace(backup_path)
+            copy(backup_path, obj.file_path)
+            obj.backed = True
+        message = 'DATABASE is backing up.'
+        rprt.report(backup, message, obj=self)
 
     def __restore(self):
         ''' Restores backed up file to its original location '''
-        if cfg.VERBOSE:
-            print('DATABASE is restoring from backup. ...', end=' ')
-        if self.backed:
-            try:
-                self.file_path.unlink()
-                backup_path = self.file_path.with_suffix('.db.bak')
-                backup_path.replace(self.file_path)
-            except Exception as e:
-                if cfg.VERBOSE:
-                    print('ERROR')
-                print(e)
-                # raise e
-            if cfg.VERBOSE:
-                print('OK')
-        else:
-            if cfg.VERBOSE:
-                print('ABORTED')
+        def __restore_temp(obj):
+            if obj.backed:
+                obj.file_path.unlink()
+                backup_path = obj.file_path.with_suffix('.db.bak')
+                backup_path.replace(obj.file_path)
+            else:
+                return 'ABORTED'
+        message = 'DATABASE is restoring from backup.'
+        rprt.report(__restore_temp, message, obj=self)
 
     def test(self, verbose=False):
-        if cfg.VERBOSE:
-            print('TESTING started.')
+        rprt.report_at_once('TESTING started.', 'OK')
         self.__backup()  # Backup database
         try:
             from tests import firm
@@ -87,6 +66,8 @@ class Database(object):
             raise e
         finally:
             self.__restore()  # Restore the backup
+        rprt.report_at_once(
+            'TESTING completed. Read above for the results.', 'OK')
 
     def populate(self):
         fill_tables_demo(self.file)

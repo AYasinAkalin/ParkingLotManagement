@@ -19,6 +19,9 @@ class Server(object):
         os.environ["FLASK_APP"] = self.app_path
 
     def start(self):
+        from utility import reporting as rprt
+        msg = 'Server is starting.'
+        rprt.report_at_once(msg, 'OK')
         sp.run("flask run", shell=True)
 
     def setDebug(self, arg):
