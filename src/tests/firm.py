@@ -75,6 +75,71 @@ class MyTest(unittest.TestCase):
     def test_correct_single_row(self):
         self.assertTrue(insert(self.firm))
 
+    def test_firm_blank_insertion(self):
+        firm1 = {key: '' for key in self.firm.keys()}
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm1)
+
+    def test_faulty_single_row(self):
+        firm1 = self.firm.copy()
+        firm1['FirmAlias'] = 'LongAliasWithLength>5'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm1)
+
+    def test_firm_postal(self):
+        firm2 = self.firm.copy()
+        firm2['PostalCode'] = '123456789'  # Max allowed postal code len. is 8
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm2)
+
+    def test_firm_email(self):
+        firm3 = self.firm.copy()
+        firm3['EMail'] = 'notAnActualEMailAddress'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm3)
+
+        firm3['EMail'] = '@noUserNameGivenToMail.com'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm3)
+
+        firm3['EMail'] = 'noDomainIsEntered@'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm3)
+
+        firm3['EMail'] = 'IncorrectDomain@.com'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm3)
+
+    def test_firm_website(self):
+        firm4 = self.firm.copy()
+        firm4['URL'] = 'notAWebSite'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm4)
+
+        firm4['URL'] = 'AlsoNotAWebSite.'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm4)
+
+        firm4['URL'] = '.com'
+        with self.assertRaises(sqlite3.IntegrityError):
+            insert(firm4)
+
+    def test_correct_many_rows(self):
+        firms = (self.firm, self.firm2)
+        self.assertTrue(insertMany(firms))
+
+    def test_faulty_many_rows(self):
+        firms = (self.firm, self.firm)
+        with self.assertRaises(sqlite3.IntegrityError):
+            insertMany(firms)
+
+        firm1 = self.firm.copy()
+        firm2 = self.firm2.copy()
+        firm2['FirmAlias'] = firm1['FirmAlias']
+        firms = (firm1, firm2)
+        with self.assertRaises(sqlite3.IntegrityError):
+            insertMany(firms)
+
 
 # Following check is suggested by Official Python Documentation
 # https://docs.python.org/3/library/unittest.html#unittest.main
