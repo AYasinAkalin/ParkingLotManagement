@@ -25,6 +25,27 @@ def insert(value_dictionary, db=config.FILE_DATABASE):
     return result
 
 
+def insertMany(rows, db=config.FILE_DATABASE):
+    conn = sqlite3.connect(str(db))
+    cursor = conn.cursor()
+    for i, value_dictionary in enumerate(rows):
+        query = "INSERT INTO Firm VALUES (\
+                '{FirmAlias}',\
+                '{FirmName}',\
+                '{URL}',\
+                '{EMail}',\
+                '{Telephone}',\
+                '{Street_1}',\
+                '{Street_2}',\
+                '{City}',\
+                '{Region}',\
+                '{PostalCode}')".format(**value_dictionary)
+        cursor.execute(query)
+    result = True
+    conn.close()
+    return result
+
+
 class MyTest(unittest.TestCase):
     firm = {
             'FirmAlias': 'tfa1',
@@ -36,6 +57,18 @@ class MyTest(unittest.TestCase):
             'Street_2': 'Testing Hotel',
             'City': 'Mars City',
             'Region': 'Big Region',
+            'PostalCode': '1000'
+        }
+    firm2 = {
+            'FirmAlias': 'tfa2',
+            'FirmName': 'Firm2Name',
+            'URL': 'test2.com',
+            'EMail': 'mail@test2.com',
+            'Telephone': '+2 345 6 789',
+            'Street_1': '2 Red Avenue',
+            'Street_2': 'Testers Inn',
+            'City': 'Palo Alto',
+            'Region': 'San Fransisco',
             'PostalCode': '1000'
         }
 
