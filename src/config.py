@@ -27,8 +27,8 @@ FILE_DATABASE = DIR_SRC / 'parkinglot.db'
 # ########################
 # SETTINGS
 # ########################
-DEMO = False
-VERBOSE = False
+DEMO = True
+VERBOSE = True
 DEBUG = True
 CLEAN_DB = True
-SILENT_INSTALL = True
+SILENT_INSTALL = False
