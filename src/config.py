@@ -32,3 +32,14 @@ VERBOSE = True
 DEBUG = True
 CLEAN_DB = True
 SILENT_INSTALL = False
+
+
+# ########################
+# CLASS (for Flask)
+# ########################
+class Config(object):
+    SECRET_KEY = 'fission-liturgy9-ru+f_ous-comely-burp'
+    """docstring for Config"""
+    def __init__(self, arg):
+        super(Config, self).__init__()
+        self.arg = arg
