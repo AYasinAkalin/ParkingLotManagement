@@ -5,8 +5,15 @@ import config as cfg
 
 def report_at_once(message, status):
     if cfg.VERBOSE:
-        string = '{m:.<70}> {s:<6}'.format(m=message, s=status)
-        print(string)
+        if status == 'OK':
+            print('{m:.<70}> \033[92m{s:<6}\033[00m'.format(
+                                                        m=message, s=status))
+        elif status == 'ERROR':
+            print('{m:.<70}> \033[91m{s:<6}\033[00m'.format(
+                                                        m=message, s=status))
+        else:
+            print('{m:.<70}> \033[93m{s:<6}\033[00m'.format(
+                                                        m=message, s=status))
 
 
 def report(func, message, *args, **kwargs):
@@ -35,7 +42,11 @@ def report(func, message, *args, **kwargs):
 
     # Finalize the report
     if cfg.VERBOSE:
-        string = '> {s:<6}'.format(s=status)
-        print(string)
+        if status == 'OK':
+            print('> \033[92m{s:<6}\033[00m'.format(s=status))
+        elif status == 'ERROR':
+            print('> \033[91m{s:<6}\033[00m'.format(s=status))
+        else:
+            print('> \033[93m{s:<6}\033[00m'.format(s=status))
     if error:
         print(err_msg)
