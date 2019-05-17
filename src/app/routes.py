@@ -53,14 +53,41 @@ def home():
     return render_template('index.html', brand=brand, title='Home')
 
 
+@app.route('/lots')
+def lots():
+    return render_template('lots.html', brand=brand, title='Services')
+
+
 @app.route('/services')
 def services():
     return render_template('services.html', brand=brand, title='Services')
 
 
+@app.route('/status')
+def status():
+    return render_template('status.html', brand=brand, title='Services')
+
+
 @app.route('/about')
 def about():
-    return render_template('about.html', brand=brand, title='About')
+    conn = connect_to_db()
+    with conn:
+        cursor = conn.cursor()
+        query = "SELECT\
+            FirmName,\
+            URL,\
+            EMail,\
+            Telephone,\
+            Street_1,\
+            Street_2,\
+            City,\
+            Region,\
+            PostalCode\
+            FROM FIRM WHERE FirmAlias='sa'"
+        cursor.execute(query)
+        resp = cursor.fetchone()
+        print(resp)
+    return render_template('about.html', brand=brand, title='About', info=resp)
 
 
 @app.route('/contact')
