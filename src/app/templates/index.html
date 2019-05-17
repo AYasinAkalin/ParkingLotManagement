@@ -3,4 +3,18 @@
 
 {% block content%}
   <h1>Home Page</h1>
+  {% if user %}
+    <ul>
+      {% for key, value in user.items() %}
+        <li>{{ key }} -- {{ value }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+  <div class="jumbotron">
+    <h1 class="display-4">Welcome!</h1>
+    <p class="lead">This website navigates you to find available parking spots.</p>
+    <hr class="my-4">
+    <p>You can see availability, membership advantages and many more...</p>
+    <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+  </div>
 {% endblock %}
