@@ -14,21 +14,11 @@
   <link href="https://unpkg.com/ionicons@4.5.5/dist/css/ionicons.min.css" rel="stylesheet">
 </head>
 <body>
-  <!-- Display Flash messages -->
-  <div class="container">
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <ul>
-          {% for message in messages %}
-            <li>{{ message }}</li>
-          {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
-  </div>
-
   <!-- Display header -->
   {% include "header.html" %}
+
+  <!-- Display Flash messages -->
+  {% include "_flashhelper.html" %}
 
   <!-- Display main content -->
   <div class="container main-content">
