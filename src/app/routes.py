@@ -100,7 +100,7 @@ def contact():
 def login():
     if request.method == 'GET':
         if 'userid' in session:
-            flash('Log out before logging in again.')
+            flash('Log out before logging in again.', 'secondary')
             return redirect(url_for('home'))
         else:
             return render_template('log-in.html', brand=brand, title='Login')
@@ -131,7 +131,8 @@ def login():
         # USER AND PASSWORD CONTROL
         # #############################
         if resp is None:
-            flash('No user is found.')
+            category = 'error'
+            flash('No user is found.', category)
             redirect(url_for('login'))
         else:
             # userid = resp[0]
@@ -143,7 +144,7 @@ def login():
         # REDIRECT
         # #############################
         if ticket:  # Correct password.
-            flash("Success")
+            flash("Logged in as {}". format(resp[1]), 'success')
             session["userid"] = resp[0]
             session["username"] = resp[1]
             session["email"] = resp[2]
@@ -151,7 +152,8 @@ def login():
             return redirect(url_for('home'))
         else:  # Wrong password.
             message = "Wrong password"
-            flash(message)
+            category = 'error'
+            flash(message, category)
             return redirect(url_for('login'))
 
 
@@ -162,7 +164,7 @@ def logout():
     session.pop('username', None)
     session.pop('email', None)
     session.pop('permission', None)
-    flash('Logged Out')
+    flash('Logged Out', 'success')
     return redirect(url_for('home'))
 
 
@@ -201,7 +203,7 @@ def register():
         # ############
         # FINALIZE
         # ############
-        flash('User registered.')
+        flash('User registered.', 'success')
         return redirect(url_for('login'))
 
 
