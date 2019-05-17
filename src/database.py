@@ -148,8 +148,7 @@ def init(file, clean=True, verbose=False):
             REFERENCES Floors(FloorNumber)\
             NOT NULL,\
         'LotAlias'      TEXT\
-            REFERENCES Floors(LotAlias)\
-            UNIQUE)"
+            REFERENCES Floors(LotAlias))"
     execute(Rental_Areas_sql, c)
 
     # create table ChargeSpots
@@ -159,11 +158,9 @@ def init(file, clean=True, verbose=False):
             UNIQUE\
             NOT NULL,\
        'LotAlias'       TEXT\
-            REFERENCES Floors(LotAlias)\
-            UNIQUE,\
+            REFERENCES Floors(LotAlias),\
         'FloorNumber'   TEXT\
-            REFERENCES Floors(FloorNumber)\
-            UNIQUE)"
+            REFERENCES Floors(FloorNumber))"
     execute(Charge_spots_sql, c)
 
     # create table ParkingSpots
@@ -875,7 +872,97 @@ def fill_tables_demo(file):
         "INSERT INTO Floors VALUES(\
             'FFENS-01',\
             '-1',\
-            'FENS')"
+            'FENS')",
+        
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN-101',\
+            '-1',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN-102',\
+            '-1',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN001',\
+            '0',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN002',\
+            '0',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN201',\
+            '2',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN202',\
+            '2',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFENS-101',\
+            '-1',\
+            'FENS'\
+                    )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFENS-102',\
+            '-1',\
+            'FENS'\
+            )",
+
+        "INSERT INTO RentalAgreement VALUES(\
+            'RFENS-101',\
+            'FENS',\
+            'TCAN',\
+            '2019-01-01',\
+            '2020-01-01',\
+            '2',\
+            '365',\
+            'Something'\
+                    )",
+
+        "INSERT INTO TenantContacts VALUES(\
+            'TCAN',\
+            'CAN',\
+            '05324262729',\
+            'cantaskin@gmail.com'\
+                    )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFMAN001',\
+            'FMAN',\
+            '0'\
+            )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFMANS002',\
+            'FMAN',\
+            '0'\
+            )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFENS201',\
+            'FENS',\
+            '2'\
+            )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFENS202',\
+            'FENS',\
+            '2'\
+            )"
     )
     for query in demo_queries:
         execute(query, conn)
