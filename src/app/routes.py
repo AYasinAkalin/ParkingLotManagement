@@ -3,6 +3,7 @@ from flask import request
 from flask import redirect, url_for
 from flask import flash
 from flask import render_template
+from flask import session
 import sqlite3
 from .. import config
 from flask_argon2 import Argon2  # Required for Argon2 Encryption
@@ -98,7 +99,11 @@ def contact():
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'GET':
-        return render_template('log-in.html', brand=brand, title='Login')
+        if 'userid' in session:
+            flash('Log out before logging in again.')
+            return redirect(url_for('home'))
+        else:
+            return render_template('log-in.html', brand=brand, title='Login')
     if request.method == 'POST':
         # ############
         # INITIALIZE
@@ -139,12 +144,26 @@ def login():
         # #############################
         if ticket:  # Correct password.
             flash("Success")
-            # session["user"] = resp
+            session["userid"] = resp[0]
+            session["username"] = resp[1]
+            session["email"] = resp[2]
+            session["permission"] = resp[4]
             return redirect(url_for('home'))
         else:  # Wrong password.
             message = "Wrong password"
             flash(message)
             return redirect(url_for('login'))
+
+
+@app.route('/logout')
+def logout():
+    # remove the username from the session if it is there
+    session.pop('userid', None)
+    session.pop('username', None)
+    session.pop('email', None)
+    session.pop('permission', None)
+    flash('Logged Out')
+    return redirect(url_for('home'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
