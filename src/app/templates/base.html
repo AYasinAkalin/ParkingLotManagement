@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+  <meta charset="utf-8">
   {% if title %}
   <title>{{ title }} - {{ brand }}</title>
   {% else %}
@@ -9,27 +10,29 @@
   <link href="{{ url_for('static', filename='node_modules/bootstrap/scss/bootstrap.min.css') }}" rel="stylesheet" type="text/css">
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
-<body class="background">
+<body>
   <!-- Display Flash messages -->
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <ul>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+  <div class="container">
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <ul>
+          {% for message in messages %}
+            <li>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+  </div>
 
   <!-- Display header -->
   {% include "header.html" %}
-  
+
   <!-- Display main content -->
-  <div class="main-content">
+  <div class="container main-content">
     {% block content%}{% endblock %}
   </div>
 
-  <!-- Display footer -->
+  <!-- Display footer -->  
   {% include "footer.html" %}
 
   <!-- Javascript Libraries required for Bootstrap -->
