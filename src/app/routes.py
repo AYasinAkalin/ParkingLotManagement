@@ -2,12 +2,14 @@ from src.app import app
 from flask import request
 from flask import flash
 from flask import render_template
+from flask_argon2 import Argon2  # Required for Argon2 Encryption
 
 
 # ################# #
 #     VARIABLES     #
 # ################# #
 brand = 'PLMS'
+argon2 = Argon2(app)
 
 
 # ################# #
