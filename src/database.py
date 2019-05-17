@@ -135,7 +135,6 @@ def init(file, clean=True, verbose=False):
         'FloorNumber'   TEXT\
             NOT NULL,\
         'LotAlias'      TEXT\
-            UNIQUE\
             REFERENCES ParkingLots(LotAlias))"
     execute(Floors_sql, c)
 
@@ -813,7 +812,70 @@ def fill_tables_demo(file):
             '',\
             'Frankfurt am Main',\
             'Hesse',\
-            '60439')"
+            '60439')",
+        "INSERT INTO ParkingLots VALUES(\
+            'FMAN',\
+            'sa',\
+            'FMAN Otoparkı',\
+            1.0,\
+            'Sabancı anayolu',\
+            'Universite Cad',\
+            'Istanbul',\
+            'Tuzla',\
+            '34156')",
+        
+        "INSERT INTO Floors VALUES(\
+            'FFMAN01',\
+            '1',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN00',\
+            '0',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN02',\
+            '2',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN03',\
+            '3',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN-01',\
+            '-1',\
+            'FMAN')",
+
+        "INSERT INTO ParkingLots VALUES(\
+            'FENS',\
+            'sa',\
+            'FENS Otoparkı',\
+             1.1,\
+            'Sabancı anayolu',\
+            'Universite Cad',\
+            'Istanbul',\
+            'Tuzla',\
+            '34156')",
+
+        "INSERT INTO Floors VALUES(\
+            'FFENS01',\
+            '1',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS00',\
+            '0',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS02',\
+            '2',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS03',\
+            '3',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS-01',\
+            '-1',\
+            'FENS')"
     )
     for query in demo_queries:
         execute(query, conn)
