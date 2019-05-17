@@ -533,6 +533,12 @@ def init(file, clean=True, verbose=False):
                 ON Users.UserID = UserPermissions.UserID;"
     execute(user_view_sql, c)
 
+    '''rental_areas_view_sql = "SELECT\
+        ParkingLots.LotAlias,\
+        LotName,\
+        Floors.FloorNumber,\
+        RentalID FROM ParkingLots INNER JOIN Floors ON ParkingLots.LotAlias = Floors.LotAlias INNER JOIN RentalAreas ON ParkingLots.LotAlias = RentalAreas.LotAlias;"
+    '''
     fill_tables(conn=c, verbose=verbose)
     c.close()
 
