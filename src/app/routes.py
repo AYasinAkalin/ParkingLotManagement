@@ -121,7 +121,20 @@ def lots():
 
 @app.route('/services')
 def services():
-    return render_template('services.html', brand=brand, title='Services')
+    conn = connect_to_db()
+    with conn:
+        cursor = conn.cursor()
+        query = "SELECT * FROM Discounts"
+        cursor.execute(query)
+        dsc = cursor.fetchall()
+
+        query = "SELECT * FROM Rentals"
+        cursor.execute(query)
+        rnt = cursor.fetchall()
+
+    return render_template(
+        'services.html', brand=brand, title='Services',
+        discounts=dsc, rentals=rnt)
 
 
 @app.route('/status')
@@ -249,6 +262,17 @@ def register():
         # ############
         flash('User registered.', 'success')
         return redirect(url_for('login'))
+
+
+@app.route('/manage', methods=['GET', 'POST'])
+def manage():
+    if request.method == 'GET':
+        render_template('manage.html', brand=brand, title='Manage Lots')
+    elif request.method == 'POST':
+        render_template('manage.html', brand=brand, title='Manage Lots')
+        pass
+
+
 
 
 @app.route('/hi')
