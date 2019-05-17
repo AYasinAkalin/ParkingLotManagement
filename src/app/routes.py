@@ -56,7 +56,7 @@ def home():
 
 @app.route('/lots')
 def lots():
-    return render_template('lots.html', brand=brand, title='Services')
+    return render_template('lots.html', brand=brand, title='Parking Lots')
 
 
 @app.route('/services')
@@ -66,7 +66,7 @@ def services():
 
 @app.route('/status')
 def status():
-    return render_template('status.html', brand=brand, title='Services')
+    return render_template('status.html', brand=brand, title='Status')
 
 
 @app.route('/about')
