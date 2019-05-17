@@ -583,6 +583,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS ChargingPrices")
     cursor.execute("DROP TABLE IF EXISTS ParkingPrices")
     cursor.execute("DROP TABLE IF EXISTS ChargerTiers")
+    cursor.execute("DROP VIEW IF EXISTS user_info")
     conn.commit()
 
 
