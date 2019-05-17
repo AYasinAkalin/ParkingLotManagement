@@ -128,40 +128,43 @@ def init(file, clean=True, verbose=False):
 
     # create table Floors
     Floors_sql = "CREATE TABLE Floors(\
+        'FloorID'       TEXT\
+            PRIMARY KEY\
+            UNIQUE\
+            NOT NULL,\
         'FloorNumber'   TEXT\
             NOT NULL,\
         'LotAlias'      TEXT\
             UNIQUE\
-            REFERENCES ParkingLots(LotAlias),\
-        PRIMARY KEY('FloorNumber', 'LotAlias')\
-        )"
-
+            REFERENCES ParkingLots(LotAlias))"
     execute(Floors_sql, c)
 
     # create table RentalAreas
     Rental_Areas_sql = "CREATE TABLE RentalAreas(\
        'RentalID'       TEXT\
-            UNIQUE,\
+            PRIMARY KEY\
+            UNIQUE\
+            NOT NULL,\
        'FloorNumber'    TEXT\
             REFERENCES Floors(FloorNumber)\
             NOT NULL,\
         'LotAlias'      TEXT\
             REFERENCES Floors(LotAlias)\
-            UNIQUE,\
-        PRIMARY KEY(FloorNumber, LotAlias, RentalID))"
+            UNIQUE)"
     execute(Rental_Areas_sql, c)
 
     # create table ChargeSpots
     Charge_spots_sql = "CREATE TABLE ChargeSpots(\
        'CSpotID'        TEXT\
+            PRIMARY KEY\
+            UNIQUE\
             NOT NULL,\
        'LotAlias'       TEXT\
             REFERENCES Floors(LotAlias)\
             UNIQUE,\
         'FloorNumber'   TEXT\
             REFERENCES Floors(FloorNumber)\
-            UNIQUE,\
-        PRIMARY KEY('CSpotID','LotAlias'))"
+            UNIQUE)"
     execute(Charge_spots_sql, c)
 
     # create table ParkingSpots
@@ -279,14 +282,6 @@ def init(file, clean=True, verbose=False):
                 REFERENCES Users(UserID)\
                 NOT NULL,\
             'Password'  TEXT\
-                NOT NULL,\
-            'Salt'      TEXT\
-                UNIQUE\
-                    ON CONFLICT ABORT\
-                DEFAULT (\
-                    'S-' || lower(hex(randomblob(4))) ||\
-                    '-' || lower(hex(randomblob(4)))\
-                    )\
                 NOT NULL\
         )"
     execute(users_creditentials_sql, c)
@@ -445,9 +440,9 @@ def init(file, clean=True, verbose=False):
     # create table MembershipDiscounts
     membership_discounts_sql = "CREATE TABLE MembershipDiscounts\
         (\
-            'MemberID'      TEXT\
+            'MShipNum'      TEXT\
                 PRIMARY KEY\
-                REFERENCES Memberships(MemberID)\
+                REFERENCES Memberships(MShipNum)\
                 UNIQUE\
                 NOT NULL,\
             'VehicleCount'  INTEGER\
@@ -532,6 +527,16 @@ def init(file, clean=True, verbose=False):
                 NOT NULL\
         )"
     execute(charger_tier_profiles_sql, c)
+
+    user_view_sql = "CREATE VIEW user_info AS\
+        SELECT Users.UserID, UserName, EMail, Password, PermissionKey\
+        FROM Users\
+            INNER JOIN UsersCreditentials\
+                ON Users.UserID = UsersCreditentials.UserID\
+            INNER JOIN UserPermissions\
+                ON Users.UserID = UserPermissions.UserID;"
+    execute(user_view_sql, c)
+
     fill_tables(conn=c, verbose=verbose)
     c.close()
 
