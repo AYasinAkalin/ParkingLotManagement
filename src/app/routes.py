@@ -72,6 +72,52 @@ def contact():
 def login():
     if request.method == 'GET':
         return render_template('log-in.html', brand=brand, title='Login')
+    if request.method == 'POST':
+        # ############
+        # INITIALIZE
+        # ############
+        email = request.form.get("email")
+        password = request.form.get("password")
+
+        resp = None
+        ticket = False
+
+        conn = connect_to_db()
+
+        # ############################
+        # RETRIEVE USER INFO FROM DB
+        # ############################
+        with conn:
+            cursor = conn.cursor()
+            query = "SELECT * FROM user_info WHERE user_info.EMail=?"
+            cursor.execute(query, (email,))
+            resp = cursor.fetchone()  # if one value -> fetchone()
+            # resp is short for 'response'
+            # Columns of resp: UserID, UserName, EMail, Password, PermissionKey
+
+        # #############################
+        # USER AND PASSWORD CONTROL
+        # #############################
+        if resp is None:
+            flash('No user is found.')
+            redirect(url_for('login'))
+        else:
+            # userid = resp[0]
+            # usernameDB = resp[1]
+            passwordDB = resp[3]
+            ticket = argon2.check_password_hash(passwordDB, password)
+
+        # #############################
+        # REDIRECT
+        # #############################
+        if ticket:  # Correct password.
+            flash("Success")
+            # session["user"] = resp
+            return redirect(url_for('home'))
+        else:  # Wrong password.
+            message = "Wrong password"
+            flash(message)
+            return redirect(url_for('login'))
 
 
 @app.route('/register', methods=['GET', 'POST'])
