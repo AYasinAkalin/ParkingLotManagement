@@ -40,6 +40,11 @@ def make_userid():
     return userid
 
 
+def convert_permission(user_permission):
+    p = user_permission
+    return '{:{fill}{width}{type}}'.format(int(p), fill='0', width=5, type='b')
+
+
 # ################# #
 #    @app.routes    #
 # ################# #
@@ -148,7 +153,7 @@ def login():
             session["userid"] = resp[0]
             session["username"] = resp[1]
             session["email"] = resp[2]
-            session["permission"] = resp[4]
+            session["permission"] = convert_permission(resp[4])
             return redirect(url_for('home'))
         else:  # Wrong password.
             message = "Wrong password"
