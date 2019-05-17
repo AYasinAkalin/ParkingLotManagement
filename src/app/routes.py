@@ -1,5 +1,6 @@
 from src.app import app
 from flask import request
+from flask import flash
 from flask import render_template
 
 
