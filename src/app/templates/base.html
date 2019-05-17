@@ -10,11 +10,18 @@
   <link href="{{ url_for('static', filename='css/style.css') }}" rel="stylesheet" type="text/css">
 </head>
 <body class="background">
+
+  <!-- Display header -->
   {% include "header.html" %}
+  
+  <!-- Display main content -->
   <div class="main-content">
     {% block content%}{% endblock %}
   </div>
+
+  <!-- Display footer -->
   {% include "footer.html" %}
+
   <!-- Javascript Libraries required for Bootstrap -->
   <!-- Keep them at the bottom of <body> -->
   <script src="{{ url_for('static', filename='node_modules/jquery-3.4.1.min.js')}}"></script>
