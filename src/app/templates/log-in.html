@@ -2,30 +2,19 @@
 
 {% block content%}
   <h1>Login Page</h1>
-  <div class="login-page">
-    <div class="form">
-
-        <form class="register-form">
-          <input type="text" name="name" placeholder="name">
-          <input type="text" name="pass" placeholder="password">
-          <input type="text" name="mail" placeholder="e-mail adress">
-          <button> Register </button>
-          <p class="message"> Already Registered <a href="#"> Log in </a></p>
-        </form>
-
-        <form class="login-form">
-          <input type="text" placeholder="username"/>
-          <input type="password" placeholder="password"/>
-          <button> log in </button>
-          <p class="message"> Not Registered? <a href="#"> Register </a></p>
-        </form>
-
+  <form action="" method="POST">
+    
+    <div class="form-group">
+      <label for="email">E-Mail</label>
+      <input type="email" class="form-control" name="email" id="email" aria-describedby="emailHelp" placeholder="Enter email">
     </div>
-  </div>
-  <script>
-  $('.message a').click(function()
-  {
-      $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-  })
-  </script>
+    
+    <div>
+      <label for="password">Password</label>
+      <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+    </div>
+
+    <button type="submit" class="btn btn-primary">Log In</button>
+  
+  </form>
 {% endblock %}
