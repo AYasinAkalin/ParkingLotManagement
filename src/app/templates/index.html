@@ -3,13 +3,6 @@
 
 {% block content%}
   <h1></h1>
-  {% if user %}
-    <ul>
-      {% for key, value in user.items() %}
-        <li>{{ key }} -- {{ value }}</li>
-      {% endfor %}
-    </ul>
-  {% endif %}
   <div class="jumbotron">
     <h1 class="display-4">Welcome!</h1>
     <p class="lead">This website navigates you to find available parking spots.</p>

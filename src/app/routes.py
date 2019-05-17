@@ -45,37 +45,42 @@ def convert_permission(user_permission):
     return '{:{fill}{width}{type}}'.format(int(p), fill='0', width=5, type='b')
 
 
-# ################# #
-#    @app.routes    #
-# ################# #
-@app.route('/', methods=['GET', 'POST'])
-def home():
-    if request.method == ['POST']:
-        user = request.form
-        '''flash("Login requested for user {}, remember me={}".format(
-            form.username.data, form.remember_me.data))
-        '''
-        return render_template('index.html', brand=brand, title='Home', user=result)
-    return render_template('index.html', brand=brand, title='Home')
+def permission_dictionary(user_permission):
+    d = {
+            'dev': False,
+            'admin': False,
+            'manager': False,
+            'tenant': False,
+            'member': False,
+            'binary': None,
+            'decimal': user_permission
+        }
+    b = convert_permission(user_permission)
+    if b[0] == '1':
+        d['dev'] = True
+    else:
+        d['dev'] = False
+    if b[1] == '1':
+        d['admin'] = True
+    else:
+        d['admin'] = False
+    if b[2] == '1':
+        d['manager'] = True
+    else:
+        d['manager'] = False
+    if b[3] == '1':
+        d['tenant'] = True
+    else:
+        d['tenant'] = False
+    if b[4] == '1':
+        d['member'] = True
+    else:
+        d['member'] = False
+    d['binary'] = b
+    return d
 
 
-@app.route('/lots')
-def lots():
-    return render_template('lots.html', brand=brand, title='Parking Lots')
-
-
-@app.route('/services')
-def services():
-    return render_template('services.html', brand=brand, title='Services')
-
-
-@app.route('/status')
-def status():
-    return render_template('status.html', brand=brand, title='Status')
-
-
-@app.route('/about')
-def about():
+def get_firm_info():
     conn = connect_to_db()
     with conn:
         cursor = conn.cursor()
@@ -92,7 +97,41 @@ def about():
             FROM FIRM WHERE FirmAlias='sa'"
         cursor.execute(query)
         resp = cursor.fetchone()
-        print(resp)
+    return resp
+
+# ################# #
+#    @app.routes    #
+# ################# #
+@app.route('/', methods=['GET', 'POST'])
+def home():
+    if request.method == ['POST']:
+        user = request.form
+        '''flash("Login requested for user {}, remember me={}".format(
+            form.username.data, form.remember_me.data))
+        '''
+        return render_template('index.html', brand=brand, title='Home', user=result)
+    return render_template('index.html', brand=brand, title='Home')
+
+
+@app.route('/lots')
+def lots():
+    #get_firm_info()
+    return render_template('lots.html', brand=brand, title='Parking Lots')
+
+
+@app.route('/services')
+def services():
+    return render_template('services.html', brand=brand, title='Services')
+
+
+@app.route('/status')
+def status():
+    return render_template('status.html', brand=brand, title='Status')
+
+
+@app.route('/about')
+def about():
+    resp = get_firm_info()
     return render_template('about.html', brand=brand, title='About', info=resp)
 
 
@@ -153,7 +192,7 @@ def login():
             session["userid"] = resp[0]
             session["username"] = resp[1]
             session["email"] = resp[2]
-            session["permission"] = convert_permission(resp[4])
+            session["permission"] = permission_dictionary(resp[4])
             return redirect(url_for('home'))
         else:  # Wrong password.
             message = "Wrong password"
