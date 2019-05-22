@@ -89,10 +89,10 @@ def init(file, clean=True, verbose=False):
             NOT NULL,\
         'URL'           TEXT\
             UNIQUE\
-            CHECK (like( '_%._%', lower(URL) )),\
+            CHECK (lower(URL) LIKE '_%._%'),\
         'EMail'         TEXT\
             UNIQUE\
-            CHECK (like( '_%@_%._%', lower(EMail) )),\
+            CHECK (lower(EMail) LIKE '_%@_%._%'),\
         'Telephone'     TEXT\
             UNIQUE,\
         'Street_1'      TEXT,\
