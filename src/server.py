@@ -20,9 +20,13 @@ class Server(object):
 
     def start(self):
         from utility import reporting as rprt
-        msg = 'Server is starting.'
-        rprt.report_at_once(msg, 'OK')
-        sp.run("flask run", shell=True)
+        rprt.report_at_once('Server is starting.', 'OK')
+        try:
+            sp.run("flask run", shell=True)
+        except KeyboardInterrupt:
+            print()
+            rprt.report_at_once('Server is shutting down.', 'OK')
+            print('Farewell!')
 
     def setDebug(self, arg):
         self.debug = bool(arg)

@@ -128,40 +128,39 @@ def init(file, clean=True, verbose=False):
 
     # create table Floors
     Floors_sql = "CREATE TABLE Floors(\
+        'FloorID'       TEXT\
+            PRIMARY KEY\
+            UNIQUE\
+            NOT NULL,\
         'FloorNumber'   TEXT\
             NOT NULL,\
         'LotAlias'      TEXT\
-            UNIQUE\
-            REFERENCES ParkingLots(LotAlias),\
-        PRIMARY KEY('FloorNumber', 'LotAlias')\
-        )"
-
+            REFERENCES ParkingLots(LotAlias))"
     execute(Floors_sql, c)
 
     # create table RentalAreas
     Rental_Areas_sql = "CREATE TABLE RentalAreas(\
        'RentalID'       TEXT\
-            UNIQUE,\
+            PRIMARY KEY\
+            UNIQUE\
+            NOT NULL,\
        'FloorNumber'    TEXT\
             REFERENCES Floors(FloorNumber)\
             NOT NULL,\
         'LotAlias'      TEXT\
-            REFERENCES Floors(LotAlias)\
-            UNIQUE,\
-        PRIMARY KEY(FloorNumber, LotAlias, RentalID))"
+            REFERENCES Floors(LotAlias))"
     execute(Rental_Areas_sql, c)
 
     # create table ChargeSpots
     Charge_spots_sql = "CREATE TABLE ChargeSpots(\
        'CSpotID'        TEXT\
+            PRIMARY KEY\
+            UNIQUE\
             NOT NULL,\
        'LotAlias'       TEXT\
-            REFERENCES Floors(LotAlias)\
-            UNIQUE,\
+            REFERENCES Floors(LotAlias),\
         'FloorNumber'   TEXT\
-            REFERENCES Floors(FloorNumber)\
-            UNIQUE,\
-        PRIMARY KEY('CSpotID','LotAlias'))"
+            REFERENCES Floors(FloorNumber))"
     execute(Charge_spots_sql, c)
 
     # create table ParkingSpots
@@ -279,14 +278,6 @@ def init(file, clean=True, verbose=False):
                 REFERENCES Users(UserID)\
                 NOT NULL,\
             'Password'  TEXT\
-                NOT NULL,\
-            'Salt'      TEXT\
-                UNIQUE\
-                    ON CONFLICT ABORT\
-                DEFAULT (\
-                    'S-' || lower(hex(randomblob(4))) ||\
-                    '-' || lower(hex(randomblob(4)))\
-                    )\
                 NOT NULL\
         )"
     execute(users_creditentials_sql, c)
@@ -445,9 +436,9 @@ def init(file, clean=True, verbose=False):
     # create table MembershipDiscounts
     membership_discounts_sql = "CREATE TABLE MembershipDiscounts\
         (\
-            'MemberID'      TEXT\
+            'MShipNum'      TEXT\
                 PRIMARY KEY\
-                REFERENCES Memberships(MemberID)\
+                REFERENCES Memberships(MShipNum)\
                 UNIQUE\
                 NOT NULL,\
             'VehicleCount'  INTEGER\
@@ -532,6 +523,22 @@ def init(file, clean=True, verbose=False):
                 NOT NULL\
         )"
     execute(charger_tier_profiles_sql, c)
+
+    user_view_sql = "CREATE VIEW user_info AS\
+        SELECT Users.UserID, UserName, EMail, Password, PermissionKey\
+        FROM Users\
+            INNER JOIN UsersCreditentials\
+                ON Users.UserID = UsersCreditentials.UserID\
+            INNER JOIN UserPermissions\
+                ON Users.UserID = UserPermissions.UserID;"
+    execute(user_view_sql, c)
+
+    '''rental_areas_view_sql = "SELECT\
+        ParkingLots.LotAlias,\
+        LotName,\
+        Floors.FloorNumber,\
+        RentalID FROM ParkingLots INNER JOIN Floors ON ParkingLots.LotAlias = Floors.LotAlias INNER JOIN RentalAreas ON ParkingLots.LotAlias = RentalAreas.LotAlias;"
+    '''
     fill_tables(conn=c, verbose=verbose)
     c.close()
 
@@ -576,6 +583,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS ChargingPrices")
     cursor.execute("DROP TABLE IF EXISTS ParkingPrices")
     cursor.execute("DROP TABLE IF EXISTS ChargerTiers")
+    cursor.execute("DROP VIEW IF EXISTS user_info")
     conn.commit()
 
 
@@ -808,7 +816,160 @@ def fill_tables_demo(file):
             '',\
             'Frankfurt am Main',\
             'Hesse',\
-            '60439')"
+            '60439')",
+        "INSERT INTO ParkingLots VALUES(\
+            'FMAN',\
+            'sa',\
+            'FMAN Otoparkı',\
+            1.0,\
+            'Sabancı anayolu',\
+            'Universite Cad',\
+            'Istanbul',\
+            'Tuzla',\
+            '34156')",
+        
+        "INSERT INTO Floors VALUES(\
+            'FFMAN01',\
+            '1',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN00',\
+            '0',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN02',\
+            '2',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN03',\
+            '3',\
+            'FMAN')",
+        "INSERT INTO Floors VALUES(\
+            'FFMAN-01',\
+            '-1',\
+            'FMAN')",
+
+        "INSERT INTO ParkingLots VALUES(\
+            'FENS',\
+            'sa',\
+            'FENS Otoparkı',\
+             1.1,\
+            'Sabancı anayolu',\
+            'Universite Cad',\
+            'Istanbul',\
+            'Tuzla',\
+            '34156')",
+
+        "INSERT INTO Floors VALUES(\
+            'FFENS01',\
+            '1',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS00',\
+            '0',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS02',\
+            '2',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS03',\
+            '3',\
+            'FENS')",
+        "INSERT INTO Floors VALUES(\
+            'FFENS-01',\
+            '-1',\
+            'FENS')",
+        
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN-101',\
+            '-1',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN-102',\
+            '-1',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN001',\
+            '0',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN002',\
+            '0',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN201',\
+            '2',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFMAN202',\
+            '2',\
+            'FMAN'\
+            )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFENS-101',\
+            '-1',\
+            'FENS'\
+                    )",
+
+        "INSERT INTO RentalAreas VALUES(\
+            'RFENS-102',\
+            '-1',\
+            'FENS'\
+            )",
+
+        "INSERT INTO RentalAgreement VALUES(\
+            'RFENS-101',\
+            'FENS',\
+            'TCAN',\
+            '2019-01-01',\
+            '2020-01-01',\
+            '2',\
+            '365',\
+            'Something'\
+                    )",
+
+        "INSERT INTO TenantContacts VALUES(\
+            'TCAN',\
+            'CAN',\
+            '05324262729',\
+            'cantaskin@gmail.com'\
+                    )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFMAN001',\
+            'FMAN',\
+            '0'\
+            )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFMANS002',\
+            'FMAN',\
+            '0'\
+            )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFENS201',\
+            'FENS',\
+            '2'\
+            )",
+
+        "INSERT INTO ChargeSpots VALUES(\
+            'CFENS202',\
+            'FENS',\
+            '2'\
+            )"
     )
     for query in demo_queries:
         execute(query, conn)

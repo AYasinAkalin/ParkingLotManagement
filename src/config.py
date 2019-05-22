@@ -21,7 +21,7 @@ DIR_ROOT = DIR_SRC.parent  # Points to Root directory of the project
     3) Use '_' as delimiter
 '''
 FILE_REQS = DIR_SRC / "requirements.txt"  # Points to requirements.txt
-FILE_FLASK = DIR_SRC / "app.py"
+FILE_FLASK = DIR_SRC / "parkingmanagement.py"
 FILE_DATABASE = DIR_SRC / 'parkinglot.db'
 
 # ########################
@@ -32,3 +32,14 @@ VERBOSE = True
 DEBUG = True
 CLEAN_DB = True
 SILENT_INSTALL = False
+
+
+# ########################
+# CLASS (for Flask)
+# ########################
+class Config(object):
+    SECRET_KEY = 'fission-liturgy9-ru+f_ous-comely-burp'
+    """docstring for Config"""
+    def __init__(self, arg):
+        super(Config, self).__init__()
+        self.arg = arg
