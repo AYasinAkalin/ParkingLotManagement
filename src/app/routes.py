@@ -100,6 +100,7 @@ def get_firm_info():
         resp = cursor.fetchone()
     return resp
 
+
 # ################# #
 #    @app.routes    #
 # ################# #
@@ -267,11 +268,32 @@ def register():
 
 @app.route('/manage', methods=['GET', 'POST'])
 def manage():
-    if request.method == 'GET':
-        render_template('manage.html', brand=brand, title='Manage Lots')
-    elif request.method == 'POST':
-        render_template('manage.html', brand=brand, title='Manage Lots')
-        pass
+    if 'permission' in session:
+        if (session['permission']['dev'] or
+        session['permission']['admin'] or
+        session['permission']['manager']):
+
+            ''' at this point, there are enough permissions, proceed'''
+            if request.method == 'GET':
+                return render_template(
+                    'manage.html',
+                    brand=brand,
+                    title='Manage Lots')
+
+            elif request.method == 'POST':
+                return render_template(
+                    'manage.html',
+                    brand=brand,
+                    title='Manage Lots')
+                pass
+        else:
+            print('Not enough permission. GTFO!')
+            abort(403)
+    else:
+        print('no user. GTFO!')
+        abort(403)
+
+
 @app.route('/<username>/account', methods=['GET', 'POST'])
 def account(username):
     if 'permission' in session:
