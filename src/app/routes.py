@@ -4,6 +4,7 @@ from flask import redirect, url_for
 from flask import flash
 from flask import render_template
 from flask import session
+from flask import abort
 import sqlite3
 from .. import config
 from flask_argon2 import Argon2  # Required for Argon2 Encryption
@@ -271,8 +272,14 @@ def manage():
     elif request.method == 'POST':
         render_template('manage.html', brand=brand, title='Manage Lots')
         pass
+@app.errorhandler(403)
+def forbidden(e):
+    return render_template('403.html'), 403
 
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 
 @app.route('/hi')
