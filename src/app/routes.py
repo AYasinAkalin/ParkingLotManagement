@@ -118,7 +118,21 @@ def home():
 @app.route('/lots')
 def lots():
     #get_firm_info()
-    return render_template('lots.html', brand=brand, title='Parking Lots')
+    conn = connect_to_db()
+    with conn:
+        cursor = conn.cursor()
+        query = "SELECT P.LotName FROM ParkingLots P"
+        cursor.execute(query)
+        plh = cursor.fetchall()
+        resp = get_firm_info()
+
+        cursor = conn.cursor()
+        query = "SELECT P.LotAlias FROM ParkingLots P"
+        cursor.execute(query)
+        plh2 = cursor.fetchall()
+        resp = get_firm_info()
+
+    return render_template('lots.html', brand=brand, title='Parking Lots', plheader= plh, info=resp, plname= plh2)
 
 
 @app.route('/services')
