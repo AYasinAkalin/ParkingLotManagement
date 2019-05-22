@@ -272,6 +272,20 @@ def manage():
     elif request.method == 'POST':
         render_template('manage.html', brand=brand, title='Manage Lots')
         pass
+@app.route('/<username>/account', methods=['GET', 'POST'])
+def account(username):
+    if 'permission' in session:
+        print('logged in user is found')
+        if request.method == 'GET':
+            return render_template('account.html', brand=brand, title='Account')
+        elif request.method == 'POST':
+            ''' To be changed '''
+            return render_template('account.html', brand=brand, title='Account')
+    else:
+        print('no user. GTFO!')
+        abort(403)
+
+
 @app.errorhandler(403)
 def forbidden(e):
     return render_template('403.html'), 403

@@ -1,0 +1,9 @@
+<!DOCTYPE html>
+{% extends "base.html" %}
+
+{% block content%}
+  <h1>Account</h1>
+  {% if session['username'] %}
+    <p>Hello {{ session['username'] }}</p>
+  {% endif %}
+{% endblock %}
