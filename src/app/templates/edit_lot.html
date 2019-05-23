@@ -13,34 +13,53 @@
       <img src="" class="" alt="">
         <div class="card-body">
           <div class="form-group">
-            <input type="text" class="form-control" name="pricemult" id="pricemult" aria-describedby="pricemultHelp" placeholder= {{plheader[0][0]}} required>
+            <small>Lot Alias</small>
+            <input type="text" class="form-control" name="lotalias" id="lotalias" placeholder= {{plheader[0]}} autofocus required>
           </div>
           <div class="form-group">
-            <input type="text" class="form-control" name="pricemult" id="pricemult" aria-describedby="pricemultHelp" placeholder="Sabanci University" required>
+            <small>Lot Name</small>
+            <input type="text" class="form-control" name="lotname" id="lotname" placeholder={{plheader[2]}} required>
           </div>
           <p class="card-text">
           <h5 class="display-6"></h5>
           <hr class="my-4">
           <div class="row">
-          <div class="col col-sm">
+            <div class="col col-sm">
+
+              <div class="form-group">
+                <small>Price Multiplier (e.g. 1.2)</small>
+                <input type="text" class="form-control" name="pricemult" id="pricemult" placeholder={{plheader[3]}} required>
+              </div>
+
 
             <div class="form-group">
-              <input type="text" class="form-control" name="pricemult" id="pricemult" aria-describedby="pricemultHelp" placeholder=" Universite Caddesi 27" required>
+              <small>Street 1</small>
+              <input type="text" class="form-control" name="street1" id="street1" placeholder={{plheader[4]}} required>
             </div>
 
+            <div class="form-group">
+              <small>Street 2</small>
+              <input type="text" class="form-control" name="street2" id="street2" placeholder={{plheader[5]}}>
+            </div>
 
-          <div class="form-group">
-            <input type="text" class="form-control" name="pricemult" id="pricemult" aria-describedby="pricemultHelp" placeholder="Tuzla/Istanbul" required>
+            <div class="form-group">
+              <small>City</small>
+              <input type="text" class="form-control" name="city" id="city" placeholder={{plheader[6]}}>
+            </div>
+
+            <div class="form-group">
+              <small>Region</small>
+              <input type="text" class="form-control" name="region" id="region" placeholder={{plheader[7]}}>
+            </div>
+
+            <div class="form-group">
+              <small>Postal Code</small>
+              <input type="text" class="form-control" name="postalcode" id="postalcode" placeholder={{plheader[8]}}>
+            </div>
+
+            </div>
           </div>
 
-          <div class="form-group">
-            <input type="text" class="form-control" name="pricemult" id="pricemult" aria-describedby="pricemultHelp" placeholder="34956" required>
-          </div>
-
-          </div>
-          </div>
-
-    <p></p>
     <button type="submit" class="btn btn-success btn-block">Submit</button>
 
   </form>
