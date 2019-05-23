@@ -169,8 +169,7 @@ def init(file, clean=True, verbose=False):
             PRIMARY KEY\
             NOT NULL,\
         'LotAlias'      TEXT\
-            REFERENCES ChargeSpots(LotAlias)\
-            UNIQUE,\
+            REFERENCES ChargeSpots(LotAlias),\
          'FloorNumber'  TEXT\
             REFERENCES Floors(FloorNumber)\
             NOT NULL)"
@@ -539,6 +538,13 @@ def init(file, clean=True, verbose=False):
         Floors.FloorNumber,\
         RentalID FROM ParkingLots INNER JOIN Floors ON ParkingLots.LotAlias = Floors.LotAlias INNER JOIN RentalAreas ON ParkingLots.LotAlias = RentalAreas.LotAlias;"
     '''
+
+    lots_floors_sql = "CREATE VIEW lots_floors AS\
+        SELECT ParkingLots.LotAlias, LotName, PriceMultiplier, Floors.FloorID, FloorNumber\
+        FROM ParkingLots\
+        INNER JOIN Floors\
+            ON ParkingLots.LotAlias = Floors.LotAlias;"
+    execute(lots_floors_sql, c)
     fill_tables(conn=c, verbose=verbose)
     c.close()
 
@@ -584,6 +590,7 @@ def delete_tables(conn):
     cursor.execute("DROP TABLE IF EXISTS ParkingPrices")
     cursor.execute("DROP TABLE IF EXISTS ChargerTiers")
     cursor.execute("DROP VIEW IF EXISTS user_info")
+    cursor.execute("DROP VIEW IF EXISTS lots_floors")
     conn.commit()
 
 
@@ -829,23 +836,23 @@ def fill_tables_demo(file):
             '34156')",
         
         "INSERT INTO Floors VALUES(\
-            'FFMAN01',\
+            'F_FMAN_01',\
             '1',\
             'FMAN')",
         "INSERT INTO Floors VALUES(\
-            'FFMAN00',\
+            'F_FMAN_00',\
             '0',\
             'FMAN')",
         "INSERT INTO Floors VALUES(\
-            'FFMAN02',\
+            'F_FMAN_02',\
             '2',\
             'FMAN')",
         "INSERT INTO Floors VALUES(\
-            'FFMAN03',\
+            'F_FMAN_03',\
             '3',\
             'FMAN')",
         "INSERT INTO Floors VALUES(\
-            'FFMAN-01',\
+            'F_FMAN_-01',\
             '-1',\
             'FMAN')",
 
@@ -861,76 +868,40 @@ def fill_tables_demo(file):
             '34156')",
 
         "INSERT INTO Floors VALUES(\
-            'FFENS01',\
+            'F_FENS_01',\
             '1',\
             'FENS')",
         "INSERT INTO Floors VALUES(\
-            'FFENS00',\
+            'F_FENS_00',\
             '0',\
             'FENS')",
         "INSERT INTO Floors VALUES(\
-            'FFENS02',\
+            'F_FENS_02',\
             '2',\
             'FENS')",
         "INSERT INTO Floors VALUES(\
-            'FFENS03',\
+            'F_FENS_03',\
             '3',\
             'FENS')",
         "INSERT INTO Floors VALUES(\
-            'FFENS-01',\
+            'F_FENS_-01',\
             '-1',\
             'FENS')",
-        
-        "INSERT INTO RentalAreas VALUES(\
-            'RFMAN-101',\
-            '-1',\
-            'FMAN'\
-            )",
 
         "INSERT INTO RentalAreas VALUES(\
-            'RFMAN-102',\
-            '-1',\
-            'FMAN'\
-            )",
-
-        "INSERT INTO RentalAreas VALUES(\
-            'RFMAN001',\
-            '0',\
-            'FMAN'\
-            )",
-
-        "INSERT INTO RentalAreas VALUES(\
-            'RFMAN002',\
-            '0',\
-            'FMAN'\
-            )",
-
-        "INSERT INTO RentalAreas VALUES(\
-            'RFMAN201',\
-            '2',\
-            'FMAN'\
-            )",
-
-        "INSERT INTO RentalAreas VALUES(\
-            'RFMAN202',\
-            '2',\
-            'FMAN'\
-            )",
-
-        "INSERT INTO RentalAreas VALUES(\
-            'RFENS-101',\
+            'R_FENS_-101',\
             '-1',\
             'FENS'\
                     )",
 
         "INSERT INTO RentalAreas VALUES(\
-            'RFENS-102',\
+            'RA_FENS_-102',\
             '-1',\
             'FENS'\
             )",
 
         "INSERT INTO RentalAgreement VALUES(\
-            'RFENS-101',\
+            'RAg_FENS_-101',\
             'FENS',\
             'TCAN',\
             '2019-01-01',\
@@ -948,28 +919,165 @@ def fill_tables_demo(file):
                     )",
 
         "INSERT INTO ChargeSpots VALUES(\
-            'CFMAN001',\
+            'C_FMAN_0N12',\
             'FMAN',\
             '0'\
             )",
 
         "INSERT INTO ChargeSpots VALUES(\
-            'CFMANS002',\
+            'C_FMAN_0N11',\
             'FMAN',\
             '0'\
             )",
 
         "INSERT INTO ChargeSpots VALUES(\
-            'CFENS201',\
+            'C_FENS_0A22',\
             'FENS',\
-            '2'\
+            '0'\
             )",
 
         "INSERT INTO ChargeSpots VALUES(\
-            'CFENS202',\
+            'C_FENS_0A21',\
             'FENS',\
-            '2'\
-            )"
+            '0'\
+            )",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A1', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A2', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A3', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A4', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A5', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A6', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A7', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A8', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A9', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A10', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A11', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A12', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A13', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A14', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A15', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A16', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A17', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A18', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A19', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0A20', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B1', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B2', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B3', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B4', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B5', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B6', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B7', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B8', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B9', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B10', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B11', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B12', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B13', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B14', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B15', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B16', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B17', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B18', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B19', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0B20', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W1', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W2', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W3', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W4', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W5', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W6', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W7', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W8', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W9', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0W10', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C1', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C2', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C3', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C4', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C5', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C6', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C7', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C8', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C9', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0C10', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N1', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N2', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N3', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N4', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N5', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N6', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N7', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N8', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N9', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N10', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N11', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0N12', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S1', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S2', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S3', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S4', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S5', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S6', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S7', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S8', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S9', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S10', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S11', 'FENS', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FENS_0S12', 'FENS', '0')",
+
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A1', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A2', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A3', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A4', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A5', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A6', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A7', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A8', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A9', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A10', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A11', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A12', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A13', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0A14', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B1', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B2', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B3', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B4', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B5', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B6', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B7', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B8', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B9', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B10', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B11', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B12', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B13', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0B14', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S1', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S2', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S3', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S4', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S5', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S6', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S7', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S8', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S9', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S10', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S11', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S12', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S13', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0S14', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N1', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N2', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N3', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N4', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N5', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N6', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N7', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N8', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N9', 'FMAN', '0')",
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N10', 'FMAN', '0')"
     )
     for query in demo_queries:
         execute(query, conn)
