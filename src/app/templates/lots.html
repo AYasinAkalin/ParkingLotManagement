@@ -2,7 +2,7 @@
 
 {% block content%}
  <body>
-  <h1>Lots Page</h1>
+  <h1>Parking Lots</h1>
   <div class="row">
   {%for i in range(2)%}
   <div class="col col-sm-4">
@@ -11,11 +11,10 @@
       <div class="card-body">
         <h5 class="card-title">{{plheader[i][0]}}</h5>
         <p class="card-text">
-        <h5 class="display-6">{{ info[0] }}</h5>
         <hr class="my-4">
         <div class="row">
         <div class="col col-sm">
-        <p><i class="icon ion-ios-pin"></i> {{ info[4] }}</p>
+        <p><a href="https://www.openstreetmap.org/#map=17/40.89041/29.37909"><i class="icon ion-ios-pin"></i></a> {{ info[4] }}</p>
         <p> {{ info[5] }}</p>
         <p> {{ info[6] }}/{{ info[7] }}</p>
         <p> {{ info[8] }}</p>
