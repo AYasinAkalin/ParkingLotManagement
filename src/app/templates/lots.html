@@ -14,7 +14,7 @@
         <h5 class="display-6">{{ info[0] }}</h5>
         <hr class="my-4">
         <div class="row">
-        <div class="col-6 col-md-6">
+        <div class="col col-sm">
         <p><i class="icon ion-ios-pin"></i> {{ info[4] }}</p>
         <p> {{ info[5] }}</p>
         <p> {{ info[6] }}/{{ info[7] }}</p>
@@ -34,7 +34,7 @@
   </div>
   {% if session %}
     {% if session['permission']['dev'] or session['permission']['admin'] %}
-      <a class="nav-link" href="/manage">Manage</a>
+      <a class="btn btn-primary" href="/manage">Manage</a>
     {% endif %}
   {% endif %}
   </body>

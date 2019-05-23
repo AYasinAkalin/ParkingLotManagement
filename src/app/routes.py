@@ -321,6 +321,32 @@ def account(username):
         print('no user. GTFO!')
         abort(403)
 
+@app.route('/lots/<lotalias>/edit', methods=['GET', 'POST'])
+def editlot(lotalias):
+    if 'permission' in session:
+        print('logged in user is found')
+        if request.method == 'GET':
+            conn = connect_to_db()
+            with conn:
+                cursor = conn.cursor()
+                query = "SELECT P.LotName FROM ParkingLots P"
+                cursor.execute(query)
+                plh = cursor.fetchall()
+                resp = get_firm_info()
+            return render_template('edit_lot.html', brand=brand, title= lotalias,plheader= plh, info=resp)
+        elif request.method == 'POST':
+            conn = connect_to_db()
+            with conn:
+                cursor = conn.cursor()
+                query = "SELECT P.LotName FROM ParkingLots P"
+                cursor.execute(query)
+                plh = cursor.fetchall()
+                resp = get_firm_info()
+                return render_template('edit_lot.html', brand=brand, title= lotalias,plheader= plh, info=resp)
+    else:
+        print('no user. GTFO!')
+        abort(403)
+    return render_template('edit_lot.html', brand=brand, title=lotalias)
 
 @app.errorhandler(403)
 def forbidden(e):
