@@ -117,7 +117,6 @@ def init(file, clean=True, verbose=False):
             UNIQUE\
             NOT NULL,\
         'PriceMultiplier'   REAL\
-            UNIQUE\
             NOT NULL,\
         'Street_1'          TEXT,\
         'Street_2'          TEXT,\
@@ -834,7 +833,7 @@ def fill_tables_demo(file):
             'Istanbul',\
             'Tuzla',\
             '34156')",
-        
+
         "INSERT INTO Floors VALUES(\
             'F_FMAN_01',\
             '1',\
