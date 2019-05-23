@@ -121,18 +121,12 @@ def lots():
     conn = connect_to_db()
     with conn:
         cursor = conn.cursor()
-        query = "SELECT P.LotName FROM ParkingLots P"
+        query = "SELECT * FROM ParkingLots P"
         cursor.execute(query)
-        plh = cursor.fetchall()
+        parkinglots = cursor.fetchall()
         resp = get_firm_info()
-
-        cursor = conn.cursor()
-        query = "SELECT P.LotAlias FROM ParkingLots P"
-        cursor.execute(query)
-        plh2 = cursor.fetchall()
-        resp = get_firm_info()
-
-    return render_template('lots.html', brand=brand, title='Parking Lots', plheader= plh, info=resp, plname= plh2)
+        print(parkinglots)
+    return render_template('lots.html', brand=brand, title='Parking Lots', parkinglots=parkinglots, info=resp)
 
 
 @app.route('/services')
@@ -289,16 +283,46 @@ def manage():
 
             ''' at this point, there are enough permissions, proceed'''
             if request.method == 'GET':
+                conn = connect_to_db()
+                cursor = conn.cursor()
+                query = "SELECT FirmAlias FROM Firm"
+                cursor.execute(query)
+                firms = cursor.fetchall()
+                print(firms)
                 return render_template(
                     'manage.html',
                     brand=brand,
-                    title='Manage Lots')
+                    title='Manage Lots',
+                    firms=firms)
 
             elif request.method == 'POST':
-                return render_template(
-                    'manage.html',
-                    brand=brand,
-                    title='Manage Lots')
+                # ############
+                # INITIALIZE
+                # ############
+                lotalias = request.form.get("lotalias")
+                lotname = request.form.get("lotname")
+                pricemult = request.form.get("pricemult")
+                firmalias = request.form.get('firmalias')
+                street1 = request.form.get("street1")
+                street2 = request.form.get("street2")
+                city = request.form.get("city")
+                region = request.form.get("region")
+                postalcode = request.form.get("postalcode")
+
+                # ############
+                # RECORD
+                # ############
+                conn = connect_to_db()
+                with conn:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        '''INSERT INTO ParkingLots VALUES(?,?,?,?,?,?,?,?,?);''',
+                        (lotalias, firmalias, lotname, pricemult, street1, street2, city, region, postalcode))
+                    # ############
+                    # FINALIZE
+                    # ############
+                    flash('Parking lot info has changed.', 'success')
+                    return redirect(url_for('lots'))
                 pass
         else:
             print('Not enough permission. GTFO!')
@@ -329,20 +353,48 @@ def editlot(lotalias):
             conn = connect_to_db()
             with conn:
                 cursor = conn.cursor()
-                query = "SELECT P.LotName FROM ParkingLots P"
-                cursor.execute(query)
-                plh = cursor.fetchall()
-                resp = get_firm_info()
-            return render_template('edit_lot.html', brand=brand, title= lotalias,plheader= plh, info=resp)
+                query = "SELECT * FROM ParkingLots WHERE LotAlias=(?)"
+                cursor.execute(query, (lotalias,))
+                plh = cursor.fetchone()
+            return render_template('edit_lot.html', brand=brand, title= lotalias,plheader= plh)
         elif request.method == 'POST':
+            # ############
+            # INITIALIZE
+            # ############
+            lotaliasnew = request.form.get("lotalias")
+            lotname = request.form.get("lotname")
+            pricemult = request.form.get("pricemult")
+            street1 = request.form.get("street1")
+            street2 = request.form.get("street2")
+            city = request.form.get("city")
+            region = request.form.get("region")
+            postalcode = request.form.get("postalcode")
+
+            # ############
+            # RECORD
+            # ############
             conn = connect_to_db()
             with conn:
                 cursor = conn.cursor()
-                query = "SELECT P.LotName FROM ParkingLots P"
-                cursor.execute(query)
-                plh = cursor.fetchall()
-                resp = get_firm_info()
-                return render_template('edit_lot.html', brand=brand, title= lotalias,plheader= plh, info=resp)
+                cursor.execute(
+                    '''UPDATE ParkingLots
+                    SET
+                        LotAlias=(?),
+                        LotName=(?),
+                        PriceMultiplier=(?),
+                        Street_1=(?),
+                        Street_2=(?),
+                        City=(?),
+                        Region=(?),
+                        PostalCode=(?)
+                    WHERE
+                        LotAlias=(?)''',
+                    (lotaliasnew, lotname, pricemult, street1, street2, city, region, postalcode, lotalias))
+                # ############
+                # FINALIZE
+                # ############
+                flash('Parking lot info has changed.', 'success')
+                return redirect(url_for('lots'))
     else:
         print('no user. GTFO!')
         abort(403)
@@ -371,7 +423,7 @@ def change_password(username):
                 "UPDATE UsersCreditentials SET password=(?) WHERE userid=(?)",
                 (password, userid))
             conn.commit()
-        
+
         # ############
         # FINALIZE
         # ############
@@ -390,7 +442,7 @@ def change_email(username):
         # ############
         userid = session['userid']
         email = request.form.get("email")
-        
+
         # ############
         # RECORD
         # ############
@@ -401,7 +453,7 @@ def change_email(username):
                 "UPDATE Users SET email=(?) WHERE userid=(?)",
                 (email, userid))
             conn.commit()
-        
+
         # ############
         # FINALIZE
         # ############
