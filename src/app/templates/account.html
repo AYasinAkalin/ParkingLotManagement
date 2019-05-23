@@ -22,8 +22,8 @@
     <div class="card-body">
       <h3>User Credentials</h3>
       <p><b>Username: </b> {{ session['username'] }}</p>
-      <p><b>E-Mail: </b>{{ session['email'] }} <a href="#" class="badge badge-primary">Change</a></p>
-      <p><b>Password: </b>•••••••• <a href="/'{{ request.path }}'/change_password" class="badge badge-primary">Change</a></p>
+      <p><b>E-Mail: </b>{{ session['email'] }} <a href="{{ request.path }}/change_email" class="badge badge-primary">Change</a></p>
+      <p><b>Password: </b>•••••••• <a href="{{ request.path }}/change_password" class="badge badge-primary">Change</a></p>
       <hr>
       <h3>User Permissions</h3>
       <p><b>Developer:</b> {{ session['permission']['dev'] }}</p>

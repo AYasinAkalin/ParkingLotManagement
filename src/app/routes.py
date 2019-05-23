@@ -348,6 +348,68 @@ def editlot(lotalias):
         abort(403)
     return render_template('edit_lot.html', brand=brand, title=lotalias)
 
+
+@app.route('/<username>/account/change_password', methods=['GET', 'POST'])
+def change_password(username):
+    if request.method == 'GET':
+        return render_template('change_password.html', brand=brand, title='Account')
+
+    elif request.method == 'POST':
+        # ############
+        # INITIALIZE
+        # ############
+        userid = session['userid']
+        password = argon2.generate_password_hash(request.form.get("password", '0'))
+
+        # ############
+        # RECORD
+        # ############
+        conn = connect_to_db()
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE UsersCreditentials SET password=(?) WHERE userid=(?)",
+                (password, userid))
+            conn.commit()
+        
+        # ############
+        # FINALIZE
+        # ############
+        flash('Password changed.', 'success')
+        return redirect(url_for('home'))
+
+
+@app.route('/<username>/account/change_email', methods=['GET', 'POST'])
+def change_email(username):
+    if request.method == 'GET':
+        return render_template('change_email.html', brand=brand, title='Account')
+
+    elif request.method == 'POST':
+        # ############
+        # INITIALIZE
+        # ############
+        userid = session['userid']
+        email = request.form.get("email")
+        
+        # ############
+        # RECORD
+        # ############
+        conn = connect_to_db()
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE Users SET email=(?) WHERE userid=(?)",
+                (email, userid))
+            conn.commit()
+        
+        # ############
+        # FINALIZE
+        # ############
+        flash('E-Mail address changed.', 'success')
+        session['email'] = email
+        return redirect(url_for('home'))
+
+
 @app.errorhandler(403)
 def forbidden(e):
     return render_template('403.html'), 403
