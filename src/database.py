@@ -1076,7 +1076,38 @@ def fill_tables_demo(file):
         "INSERT INTO ParkingSpots VALUES('P_FMAN_0N7', 'FMAN', '0')",
         "INSERT INTO ParkingSpots VALUES('P_FMAN_0N8', 'FMAN', '0')",
         "INSERT INTO ParkingSpots VALUES('P_FMAN_0N9', 'FMAN', '0')",
-        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N10', 'FMAN', '0')"
+        "INSERT INTO ParkingSpots VALUES('P_FMAN_0N10', 'FMAN', '0')",
+        # Add demo users
+        # Users:
+        #   {
+        #   {
+        #       email: admin@example.com
+        #       password: 123456
+        #       role: admin
+        #   },
+        #   {
+        #       email: cormen@gmail.com
+        #       password: 123456
+        #       role: member
+        #   },
+        #   {
+        #       email: rivest@rivest.com
+        #       password: 00000
+        #       role: member
+        #   }
+        # }'''
+        # User 1
+        "INSERT INTO Users VALUES('U00000001', 'admin', 'admin@example.com')",
+        "INSERT INTO UsersCreditentials VALUES('U00000001','$argon2id$v=19$m=102400,t=2,p=8$QkkaiHxSgXCvVPp4VHOUwA$28snrSeIVK9/FfhhP+SyXw')",
+        "INSERT INTO UserPermissions VALUES('U00000001', '31')",
+        # User 2
+        "INSERT INTO Users VALUES('U00000002', 'cormen', 'cormen@gmail.com')",
+        "INSERT INTO UsersCreditentials VALUES('U00000002', '$argon2id$v=19$m=102400,t=2,p=8$0kiIbTYtha5X4PczSO8qnw$VuVF2X9hOnqPbIlBRSfWuQ')",
+        "INSERT INTO UserPermissions VALUES('U00000002', '1')",
+        # User 3
+        "INSERT INTO Users VALUES('U00000003', 'rivest', 'rivest@rivest.com')",
+        "INSERT INTO UsersCreditentials VALUES('U00000003', '$argon2id$v=19$m=102400,t=2,p=8$4Yr0bg0AxuxrElypDIK6cw$7KepS6bSVpPpNQsFX+wfwg')",
+        "INSERT INTO UserPermissions VALUES('U00000003', '1')"
     )
     for query in demo_queries:
         execute(query, conn)
