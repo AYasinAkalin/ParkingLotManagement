@@ -118,7 +118,15 @@ def home():
 @app.route('/lots')
 def lots():
     #get_firm_info()
-    return render_template('lots.html', brand=brand, title='Parking Lots')
+    conn = connect_to_db()
+    with conn:
+        cursor = conn.cursor()
+        query = "SELECT * FROM ParkingLots P"
+        cursor.execute(query)
+        parkinglots = cursor.fetchall()
+        resp = get_firm_info()
+        print(parkinglots)
+    return render_template('lots.html', brand=brand, title='Parking Lots', parkinglots=parkinglots, info=resp)
 
 
 @app.route('/services')
@@ -275,16 +283,46 @@ def manage():
 
             ''' at this point, there are enough permissions, proceed'''
             if request.method == 'GET':
+                conn = connect_to_db()
+                cursor = conn.cursor()
+                query = "SELECT FirmAlias FROM Firm"
+                cursor.execute(query)
+                firms = cursor.fetchall()
+                print(firms)
                 return render_template(
                     'manage.html',
                     brand=brand,
-                    title='Manage Lots')
+                    title='Manage Lots',
+                    firms=firms)
 
             elif request.method == 'POST':
-                return render_template(
-                    'manage.html',
-                    brand=brand,
-                    title='Manage Lots')
+                # ############
+                # INITIALIZE
+                # ############
+                lotalias = request.form.get("lotalias")
+                lotname = request.form.get("lotname")
+                pricemult = request.form.get("pricemult")
+                firmalias = request.form.get('firmalias')
+                street1 = request.form.get("street1")
+                street2 = request.form.get("street2")
+                city = request.form.get("city")
+                region = request.form.get("region")
+                postalcode = request.form.get("postalcode")
+
+                # ############
+                # RECORD
+                # ############
+                conn = connect_to_db()
+                with conn:
+                    cursor = conn.cursor()
+                    cursor.execute(
+                        '''INSERT INTO ParkingLots VALUES(?,?,?,?,?,?,?,?,?);''',
+                        (lotalias, firmalias, lotname, pricemult, street1, street2, city, region, postalcode))
+                    # ############
+                    # FINALIZE
+                    # ############
+                    flash('Parking lot info has changed.', 'success')
+                    return redirect(url_for('lots'))
                 pass
         else:
             print('Not enough permission. GTFO!')
@@ -306,6 +344,122 @@ def account(username):
     else:
         print('no user. GTFO!')
         abort(403)
+
+@app.route('/lots/<lotalias>/edit', methods=['GET', 'POST'])
+def editlot(lotalias):
+    if 'permission' in session:
+        print('logged in user is found')
+        if request.method == 'GET':
+            conn = connect_to_db()
+            with conn:
+                cursor = conn.cursor()
+                query = "SELECT * FROM ParkingLots WHERE LotAlias=(?)"
+                cursor.execute(query, (lotalias,))
+                plh = cursor.fetchone()
+            return render_template('edit_lot.html', brand=brand, title= lotalias,plheader= plh)
+        elif request.method == 'POST':
+            # ############
+            # INITIALIZE
+            # ############
+            lotaliasnew = request.form.get("lotalias")
+            lotname = request.form.get("lotname")
+            pricemult = request.form.get("pricemult")
+            street1 = request.form.get("street1")
+            street2 = request.form.get("street2")
+            city = request.form.get("city")
+            region = request.form.get("region")
+            postalcode = request.form.get("postalcode")
+
+            # ############
+            # RECORD
+            # ############
+            conn = connect_to_db()
+            with conn:
+                cursor = conn.cursor()
+                cursor.execute(
+                    '''UPDATE ParkingLots
+                    SET
+                        LotAlias=(?),
+                        LotName=(?),
+                        PriceMultiplier=(?),
+                        Street_1=(?),
+                        Street_2=(?),
+                        City=(?),
+                        Region=(?),
+                        PostalCode=(?)
+                    WHERE
+                        LotAlias=(?)''',
+                    (lotaliasnew, lotname, pricemult, street1, street2, city, region, postalcode, lotalias))
+                # ############
+                # FINALIZE
+                # ############
+                flash('Parking lot info has changed.', 'success')
+                return redirect(url_for('lots'))
+    else:
+        print('no user. GTFO!')
+        abort(403)
+    return render_template('edit_lot.html', brand=brand, title=lotalias)
+
+
+@app.route('/<username>/account/change_password', methods=['GET', 'POST'])
+def change_password(username):
+    if request.method == 'GET':
+        return render_template('change_password.html', brand=brand, title='Account')
+
+    elif request.method == 'POST':
+        # ############
+        # INITIALIZE
+        # ############
+        userid = session['userid']
+        password = argon2.generate_password_hash(request.form.get("password", '0'))
+
+        # ############
+        # RECORD
+        # ############
+        conn = connect_to_db()
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE UsersCreditentials SET password=(?) WHERE userid=(?)",
+                (password, userid))
+            conn.commit()
+
+        # ############
+        # FINALIZE
+        # ############
+        flash('Password changed.', 'success')
+        return redirect(url_for('home'))
+
+
+@app.route('/<username>/account/change_email', methods=['GET', 'POST'])
+def change_email(username):
+    if request.method == 'GET':
+        return render_template('change_email.html', brand=brand, title='Account')
+
+    elif request.method == 'POST':
+        # ############
+        # INITIALIZE
+        # ############
+        userid = session['userid']
+        email = request.form.get("email")
+
+        # ############
+        # RECORD
+        # ############
+        conn = connect_to_db()
+        with conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE Users SET email=(?) WHERE userid=(?)",
+                (email, userid))
+            conn.commit()
+
+        # ############
+        # FINALIZE
+        # ############
+        flash('E-Mail address changed.', 'success')
+        session['email'] = email
+        return redirect(url_for('home'))
 
 
 @app.errorhandler(403)
