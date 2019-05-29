@@ -125,7 +125,6 @@ def lots():
         cursor.execute(query)
         parkinglots = cursor.fetchall()
         resp = get_firm_info()
-        print(parkinglots)
     return render_template('lots.html', brand=brand, title='Parking Lots', parkinglots=parkinglots, info=resp)
 
 
@@ -288,7 +287,6 @@ def manage():
                 query = "SELECT FirmAlias FROM Firm"
                 cursor.execute(query)
                 firms = cursor.fetchall()
-                print(firms)
                 return render_template(
                     'manage.html',
                     brand=brand,
