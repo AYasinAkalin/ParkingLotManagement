@@ -2,6 +2,9 @@
 
 This system had designed and built for a course project for course named CS306 Database Management Systems.
 
+## Install
+See [docs/install.md](docs/install.md) for details.
+
 ## Abstract
 
 There is an expanding firm in business of multi-storey parking lots. This firm owns one parking lot at the moment, yet looking for an opportunity to expand, therefore is in need for a system to manage all parking lots it owns at once.
@@ -151,9 +154,6 @@ There are several types of users with varying authorizations.
    Doesn't have any credentials. Can start a membership. Can see only the landing page of the website and get information about:
       - Live usage information
       - Membership opportunities
-
-
-## Install
 
 ## License
 
