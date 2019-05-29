@@ -275,58 +275,55 @@ def register():
 
 @app.route('/manage', methods=['GET', 'POST'])
 def manage():
-    if 'permission' in session:
-        if (session['permission']['dev'] or
-        session['permission']['admin'] or
-        session['permission']['manager']):
+    if ('permission' in session and
+        (session['permission']['dev'] or
+         session['permission']['admin'] or
+         session['permission']['manager'])):
 
-            ''' at this point, there are enough permissions, proceed'''
-            if request.method == 'GET':
-                conn = connect_to_db()
+        ''' at this point, there are enough permissions, proceed'''
+        if request.method == 'GET':
+            conn = connect_to_db()
+            cursor = conn.cursor()
+            query = "SELECT FirmAlias FROM Firm"
+            cursor.execute(query)
+            firms = cursor.fetchall()
+            return render_template(
+                'manage.html',
+                brand=brand,
+                title='Manage Lots',
+                firms=firms)
+
+        elif request.method == 'POST':
+            # ############
+            # INITIALIZE
+            # ############
+            lotalias = request.form.get("lotalias")
+            lotname = request.form.get("lotname")
+            pricemult = request.form.get("pricemult")
+            firmalias = request.form.get('firmalias')
+            street1 = request.form.get("street1")
+            street2 = request.form.get("street2")
+            city = request.form.get("city")
+            region = request.form.get("region")
+            postalcode = request.form.get("postalcode")
+
+            # ############
+            # RECORD
+            # ############
+            conn = connect_to_db()
+            with conn:
                 cursor = conn.cursor()
-                query = "SELECT FirmAlias FROM Firm"
-                cursor.execute(query)
-                firms = cursor.fetchall()
-                return render_template(
-                    'manage.html',
-                    brand=brand,
-                    title='Manage Lots',
-                    firms=firms)
-
-            elif request.method == 'POST':
+                cursor.execute(
+                    '''INSERT INTO ParkingLots VALUES(?,?,?,?,?,?,?,?,?);''',
+                    (lotalias, firmalias, lotname, pricemult, street1, street2, city, region, postalcode))
                 # ############
-                # INITIALIZE
+                # FINALIZE
                 # ############
-                lotalias = request.form.get("lotalias")
-                lotname = request.form.get("lotname")
-                pricemult = request.form.get("pricemult")
-                firmalias = request.form.get('firmalias')
-                street1 = request.form.get("street1")
-                street2 = request.form.get("street2")
-                city = request.form.get("city")
-                region = request.form.get("region")
-                postalcode = request.form.get("postalcode")
-
-                # ############
-                # RECORD
-                # ############
-                conn = connect_to_db()
-                with conn:
-                    cursor = conn.cursor()
-                    cursor.execute(
-                        '''INSERT INTO ParkingLots VALUES(?,?,?,?,?,?,?,?,?);''',
-                        (lotalias, firmalias, lotname, pricemult, street1, street2, city, region, postalcode))
-                    # ############
-                    # FINALIZE
-                    # ############
-                    flash('Parking lot info has changed.', 'success')
-                    return redirect(url_for('lots'))
-                pass
-        else:
-            print('Not enough permission. GTFO!')
-            abort(403)
+                flash('Parking lot info has changed.', 'success')
+                return redirect(url_for('lots'))
+            pass
     else:
-        print('no user. GTFO!')
+        print('Not enough permissions or no user. GTFO!')
         abort(403)
 
 
@@ -345,7 +342,10 @@ def account(username):
 
 @app.route('/lots/<lotalias>/edit', methods=['GET', 'POST'])
 def editlot(lotalias):
-    if 'permission' in session:
+    if ('permission' in session and
+        (session['permission']['dev'] or
+         session['permission']['admin'] or
+         session['permission']['manager'])):
         print('logged in user is found')
         if request.method == 'GET':
             conn = connect_to_db()
